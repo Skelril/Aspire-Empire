@@ -67,33 +67,38 @@ for (var tile in tileMap) {
 
 // Unit Management
 
-var units = []
+var units = {}
 
-function addUnit(x, z) {
+function addUnit(uuid, x, z) {
   var geometry = new THREE.BoxGeometry( .5, .5, .5 );
   var material = new THREE.MeshPhongMaterial( { color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide} );
 
   var unit = new THREE.Mesh( geometry, material );
   unit.position.set(x + 0.5, 2.25, z + 0.5);
   unit.targPos = new THREE.Vector3(x + 0.5, 2.25, z + 0.5);
-  units.push(unit);
+  units[uuid] = unit;
 
   scene.add(unit);
 
   return unit;
 }
 
-function moveUnit(unit, newX, newZ) {
-  unit.targPos.set(newX, 2.25, newZ);
+function remUnit(uuid) {
+  scene.remove(units[uuid]);
+  delete units[uuid];
 }
 
-var unitA = addUnit(0, 0);
-var unitB = addUnit(0, 2);
-var unitC = addUnit(0, 4);
+function moveUnit(uuid, newX, newZ) {
+  units[uuid].targPos.set(newX, 2.25, newZ);
+}
 
-moveUnit(unitA, 3, 4);
-moveUnit(unitB, 2, 2);
-moveUnit(unitC, 4, 3);
+addUnit("abc", 0, 0);
+addUnit("cba", 0, 2);
+addUnit("ars", 0, 4);
+
+moveUnit("abc", 3, 4);
+moveUnit("cba", 2, 2);
+moveUnit("ars", 4, 3);
 
 // Camera Controls
 camera.position.x = -2;
