@@ -1,5 +1,5 @@
 document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-window.addEventListener( 'keyup', onKeyPress, false );
+window.addEventListener( 'keydown', onKeyDown, false );
 
 function onDocumentMouseDown(e) {
   e.preventDefault();
@@ -26,7 +26,7 @@ function onDocumentMouseDown(e) {
   }
 }
 
-function onKeyPress(e) {
+function onKeyDown(e) {
   var key = e.keyCode ? e.keyCode : e.which;
 
   switch (key) {
