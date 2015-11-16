@@ -1,14 +1,14 @@
-document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-window.addEventListener( 'keydown', onKeyDown, false );
+document.addEventListener('mousedown', onDocumentMouseDown, false);
+window.addEventListener('keydown', onKeyDown, false);
 
 function onDocumentMouseDown(e) {
   e.preventDefault();
 
   var raycaster = new THREE.Raycaster();
   var mouse = new THREE.Vector2();
-  mouse.x = ( e.clientX / renderer.domElement.clientWidth ) * 2 - 1;
-  mouse.y = - ( e.clientY / renderer.domElement.clientHeight ) * 2 + 1;
-  raycaster.setFromCamera( mouse, camera );
+  mouse.x = (e.clientX / renderer.domElement.clientWidth) * 2 - 1;
+  mouse.y = -(e.clientY / renderer.domElement.clientHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
   var intersects = raycaster.intersectObjects(clickable);
   if (intersects.length > 0) {
     var discoveredObject = intersects[0].object;

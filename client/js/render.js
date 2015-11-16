@@ -53,11 +53,11 @@ function pocessUnits() {
 ////////////////////////////////////////////////////////////////////////////////
 
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 var renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
 var clickable = [];
 
@@ -124,13 +124,13 @@ function addTile(tileDef) {
 }
 
 function _addTile(ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
-  var geometry = new THREE.PlaneGeometry( 5, 5, 1, 1 );
+  var geometry = new THREE.PlaneGeometry(5, 5, 1, 1);
   geometry.vertices[0] = new THREE.Vector3(ax, ha, az);
   geometry.vertices[1] = new THREE.Vector3(bx, hb, bz);
   geometry.vertices[2] = new THREE.Vector3(cx, hc, cz);
   geometry.vertices[3] = new THREE.Vector3(dx, hd, dz);
 
-  var material = new THREE.MeshPhongMaterial( { color: 0x6F6CC5, specular: 0x555555, shininess: 30, side: THREE.DoubleSide} );
+  var material = new THREE.MeshPhongMaterial({ color: 0x6F6CC5, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
   return new THREE.Mesh(geometry, material);
 }
 
@@ -152,8 +152,8 @@ function _initUnitAt(unit, x, z) {
 }
 
 function addUnit(uuid, x, z) {
-  var geometry = new THREE.BoxGeometry( .5, .5, .5 );
-  var material = new THREE.MeshPhongMaterial( { color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide} );
+  var geometry = new THREE.BoxGeometry(.5, .5, .5);
+  var material = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
 
   var unit = new THREE.Mesh( geometry, material );
   unit.aspire_type = "unit";
@@ -208,11 +208,11 @@ camera.targPos = new THREE.Vector3(camera.position.x, camera.position.y, camera.
 camera.lookAt(new THREE.Vector3(0, 1, 0));
 
 // Lighting
-var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+var light = new THREE.AmbientLight(0x404040); // soft white light
 scene.add( light );
 
-var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.5 );
-directionalLight.position.set( 0, 1, 0 );
+var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(0, 1, 0);
 scene.add( directionalLight );
 
 // Load game data
@@ -250,7 +250,7 @@ function processMovement(moveable) {
 function render() {
   requestAnimationFrame(render);
 
-  scene.traverse(function( moveable ) {
+  scene.traverse(function(moveable) {
       if (!moveable.hasOwnProperty("targPos")) {
         return;
       }
@@ -261,11 +261,11 @@ function render() {
 
   processMovement(camera);
 
-  renderer.render( scene, camera );
+  renderer.render(scene, camera);
 }
 render();
 
-window.addEventListener( 'resize', onWindowResize, false );
+window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize(){
 
