@@ -2,7 +2,7 @@
 // Server Interface
 ////////////////////////////////////////////////////////////////////////////////
 
-function requestMap(gameID) {
+function requestMap() {
   return [
     {x: 0, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 0, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
@@ -32,7 +32,13 @@ function requestMap(gameID) {
   ];
 }
 
-function pocessUnits(gameID) {
+function requestMove(x, z) {
+  if (activeUnit != null) {
+    moveUnit(activeUnit.uuid, x, z);
+  }
+}
+
+function pocessUnits() {
   addUnit("abc", 0, 0);
   addUnit("cba", 0, 2);
   addUnit("ars", 0, 4);
@@ -96,20 +102,23 @@ function addTile(tileDef) {
 
   scene.add(tile);
 
+  tile.x = tileDef.x;
+  tile.z = tileDef.z;
   tile.height = (tileDef.seH + tileDef.swH + tileDef.neH + tileDef.nwH) / 4;
   tile.def = tileDef;
+  tile.aspire_type = "tile";
 
-  map.minX = _getMin(map.minX, tileDef.x);
-  map.minZ = _getMin(map.minZ, tileDef.z);
+  map.minX = _getMin(map.minX, tile.x);
+  map.minZ = _getMin(map.minZ, tile.z);
   map.minY = _getMin(map.minY, tile.height);
-  map.maxX = _getMax(map.maxX, tileDef.x + 1);
-  map.maxZ = _getMax(map.maxZ, tileDef.z + 1);
+  map.maxX = _getMax(map.maxX, tile.x + 1);
+  map.maxZ = _getMax(map.maxZ, tile.z + 1);
   map.maxY = _getMin(map.maxY, tile.height);
 
-  if (!(tileDef.x in map.tiles)) {
-    map.tiles[tileDef.x] = {}
+  if (!(tile.x in map.tiles)) {
+    map.tiles[tile.x] = {}
   }
-  map.tiles[tileDef.x][tileDef.z] = tile;
+  map.tiles[tile.x][tile.z] = tile;
 
   clickable.push(tile);
 }
@@ -147,6 +156,7 @@ function addUnit(uuid, x, z) {
   var material = new THREE.MeshPhongMaterial( { color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide} );
 
   var unit = new THREE.Mesh( geometry, material );
+  unit.aspire_type = "unit";
   unit.uuid = uuid;
   unit.height = geometry.parameters.height;
   _initUnitAt(unit, x, z);

@@ -11,7 +11,18 @@ function onDocumentMouseDown(e) {
   raycaster.setFromCamera( mouse, camera );
   var intersects = raycaster.intersectObjects(clickable);
   if (intersects.length > 0) {
-    setActiveUnit(intersects[0].object.uuid);
+    var discoveredObject = intersects[0].object;
+    if (discoveredObject.hasOwnProperty("aspire_type")) {
+      var aspire_type = discoveredObject["aspire_type"];
+      switch (aspire_type) {
+        case "tile":
+          requestMove(discoveredObject.x, discoveredObject.z);
+          break;
+        case "unit":
+          setActiveUnit(discoveredObject.uuid);
+          break;
+      }
+    }
   }
 }
 
