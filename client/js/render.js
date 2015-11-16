@@ -247,6 +247,46 @@ function processMovement(moveable) {
   }
 }
 
+var focusRings = [];
+
+function _updateFocusRings() {
+  var unitOfChange = 1.0 / focusRings.length;
+  for (var ring in focusRings) {
+    var focusRing = focusRings[ring];
+    focusRing.position.set(activeUnit.position.x, activeUnit.position.y, activeUnit.position.z);
+    if ((Number(ring) + 1) % 2 === 0) {
+      focusRing.rotateX(.1);
+    } else {
+      focusRing.rotateY(.1);
+    }
+  }
+}
+
+function drawFocusRing() {
+  if (focusRings.length === 0) {
+    if (activeUnit != null) {
+      var geometry = new THREE.RingGeometry(0.5, 0.6, 32);
+      var material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide});
+      focusRings = [
+        new THREE.Mesh(geometry, material),
+        new THREE.Mesh(geometry, material)
+      ];
+      _updateFocusRings();
+      for (var ring in focusRings) {
+        scene.add(focusRings[ring]);
+      }
+    }
+  } else {
+    if (activeUnit == null) {
+      for (var ring in focusRings) {
+        scene.remove(focusRings[ring]);
+      }
+    } else {
+      _updateFocusRings();
+    }
+  }
+}
+
 function render() {
   requestAnimationFrame(render);
 
@@ -260,6 +300,7 @@ function render() {
   );
 
   processMovement(camera);
+  drawFocusRing();
 
   renderer.render(scene, camera);
 }
