@@ -4,31 +4,31 @@
 
 function requestMap(gameID) {
   return [
-    {x: 0, z: 0, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 0, z: 1, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 0, z: 2, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 0, z: 3, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 0, z: 4, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 1, z: 0, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 1, z: 1, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 1, z: 2, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 1, z: 3, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 1, z: 4, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 2, z: 0, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 2, z: 1, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 2, z: 2, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 2, z: 3, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 2, z: 4, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 3, z: 0, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 3, z: 1, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 3, z: 2, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 3, z: 3, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 3, z: 4, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 4, z: 0, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 4, z: 1, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 4, z: 2, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 4, z: 3, seH: 1, swH: 1, neH: 1, nwH: 1},
-    {x: 4, z: 4, seH: 1, swH: 1, neH: 1, nwH: 1}
+    {x: 0, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 0, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 0, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 0, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 0, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 1, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 1, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 1, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 1, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 1, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 2, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 2, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 2, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 2, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 2, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 3, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 3, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 3, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 3, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 3, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 4, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 4, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 4, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 4, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 4, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0}
   ];
 }
 
@@ -53,9 +53,34 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
+var clickable = [];
+
 // Tile/map Management
 
-var tiles = {};
+var map = {
+  tiles: {},
+  minX: NaN,
+  maxX: NaN,
+  minY: NaN,
+  maxY: NaN,
+  minZ: NaN,
+  maxZ: NaN
+};
+
+function _getMax(existingVal, newVal) {
+  if (isNaN(existingVal)) {
+    return newVal;
+  }
+  return Math.max(existingVal, newVal);
+}
+
+function _getMin(existingVal, newVal) {
+  if (isNaN(existingVal)) {
+    return newVal;
+  }
+  return Math.min(existingVal, newVal);
+}
+
 
 function addTile(tileDef) {
   var tile = _addTile(
@@ -63,18 +88,30 @@ function addTile(tileDef) {
     tileDef.x + 0, tileDef.z + 1, // b
     tileDef.x + 1, tileDef.z + 0, // c
     tileDef.x + 1, tileDef.z + 1, // d
-    tileDef.seH + 1,
-    tileDef.swH + 1,
-    tileDef.neH + 1,
-    tileDef.nwH + 1
+    tileDef.seH,
+    tileDef.swH,
+    tileDef.neH,
+    tileDef.nwH
   );
+
   scene.add(tile);
 
+  tile.height = (tileDef.seH + tileDef.swH + tileDef.neH + tileDef.nwH) / 4;
   tile.def = tileDef;
-  if (!(tileDef.x in tiles)) {
-    tiles[tileDef.x] = {}
+
+  map.minX = _getMin(map.minX, tileDef.x);
+  map.minZ = _getMin(map.minZ, tileDef.z);
+  map.minY = _getMin(map.minY, tile.height);
+  map.maxX = _getMax(map.maxX, tileDef.x + 1);
+  map.maxZ = _getMax(map.maxZ, tileDef.z + 1);
+  map.maxY = _getMin(map.maxY, tile.height);
+
+  if (!(tileDef.x in map.tiles)) {
+    map.tiles[tileDef.x] = {}
   }
-  tiles[tileDef.x][tileDef.z] = tile;
+  map.tiles[tileDef.x][tileDef.z] = tile;
+
+  clickable.push(tile);
 }
 
 function _addTile(ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
@@ -97,34 +134,66 @@ function loadMap(tileMap) {
 // Unit Management
 
 var units = {}
+var activeUnit = null;
+
+function _initUnitAt(unit, x, z) {
+  var y = map.tiles[x][z].height + (unit.height / 2);
+  unit.position.set(x + 0.5, y, z + 0.5);
+  unit.targPos = new THREE.Vector3(x + 0.5, y, z + 0.5);
+}
 
 function addUnit(uuid, x, z) {
   var geometry = new THREE.BoxGeometry( .5, .5, .5 );
   var material = new THREE.MeshPhongMaterial( { color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide} );
 
   var unit = new THREE.Mesh( geometry, material );
-  unit.position.set(x + 0.5, 2.25, z + 0.5);
-  unit.targPos = new THREE.Vector3(x + 0.5, 2.25, z + 0.5);
+  unit.uuid = uuid;
+  unit.height = geometry.parameters.height;
+  _initUnitAt(unit, x, z);
+
   units[uuid] = unit;
 
   scene.add(unit);
 
+  clickable.push(unit);
+
   return unit;
 }
 
+function setActiveUnit(uuid) {
+  activeUnit = units[uuid];
+  cameraLookAt(activeUnit);
+}
+
+function moveUnit(uuid, x, z) {
+  var unit = units[uuid];
+  unit.targPos.set(x + 0.5, map.tiles[x][z].height + (unit.height / 2), z + 0.5);
+}
+
 function remUnit(uuid) {
-  scene.remove(units[uuid]);
+  var unit = units[uuid];
+  scene.remove(unit);
+  clickable.remove(unit);
   delete units[uuid];
 }
 
-function moveUnit(uuid, newX, newZ) {
-  units[uuid].targPos.set(newX, 2.25, newZ);
+// Camera Controls
+function cameraLookAt(unit) {
+  if (unit != null) {
+    camera.lookAt(unit.position);
+  }
 }
 
-// Camera Controls
+function adjustCamera(x, y, z) {
+  camera.targPos.x = Math.min(map.maxX + 5, Math.max(map.minX - 5, camera.targPos.x + x));
+  camera.targPos.y = Math.min(map.maxY + 5, Math.max(map.minY + 2, camera.targPos.y + y));
+  camera.targPos.z = Math.min(map.maxZ + 5, Math.max(map.minZ - 5, camera.targPos.z + z));
+}
+
 camera.position.x = -2;
-camera.position.y = 5;
+camera.position.y = 3;
 camera.position.z = 7;
+camera.targPos = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
 
 camera.lookAt(new THREE.Vector3(0, 1, 0));
 
@@ -144,34 +213,55 @@ pocessUnits("");
 var MOVEMENT_PRECISION = 1;
 var MOVEMENT_UNIT = 0.1;
 
+function processMovement(moveable) {
+  if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== moveable.targPos.x.toFixed(MOVEMENT_PRECISION)) {
+    if (moveable.position.x < moveable.targPos.x) {
+      moveable.position.x += MOVEMENT_UNIT;
+    } else {
+      moveable.position.x -= MOVEMENT_UNIT;
+    }
+  }
+  if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== moveable.targPos.y.toFixed(MOVEMENT_PRECISION)) {
+    if (moveable.position.y < moveable.targPos.y) {
+      moveable.position.y += MOVEMENT_UNIT;
+    } else {
+      moveable.position.y -= MOVEMENT_UNIT;
+    }
+  }
+  if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== moveable.targPos.z.toFixed(MOVEMENT_PRECISION)) {
+    if (moveable.position.z < moveable.targPos.z) {
+      moveable.position.z += MOVEMENT_UNIT;
+    } else {
+      moveable.position.z -= MOVEMENT_UNIT;
+    }
+  }
+}
+
 function render() {
   requestAnimationFrame(render);
 
-  for (unit in units) {
-    var aUnit = units[unit];
-    if (aUnit.position.x.toFixed(MOVEMENT_PRECISION) !== aUnit.targPos.x.toFixed(MOVEMENT_PRECISION)) {
-      if (aUnit.position.x < aUnit.targPos.x) {
-        aUnit.position.x += MOVEMENT_UNIT;
-      } else {
-        aUnit.position.x -= MOVEMENT_UNIT;
+  scene.traverse(function( moveable ) {
+      if (!moveable.hasOwnProperty("targPos")) {
+        return;
       }
+      processMovement(moveable);
+      cameraLookAt(activeUnit);
     }
-    if (aUnit.position.y.toFixed(MOVEMENT_PRECISION) !== aUnit.targPos.y.toFixed(MOVEMENT_PRECISION)) {
-      if (aUnit.position.y < aUnit.targPos.y) {
-        aUnit.position.y += MOVEMENT_UNIT;
-      } else {
-        aUnit.position.y -= MOVEMENT_UNIT;
-      }
-    }
-    if (aUnit.position.z.toFixed(MOVEMENT_PRECISION) !== aUnit.targPos.z.toFixed(MOVEMENT_PRECISION)) {
-      if (aUnit.position.z < aUnit.targPos.z) {
-        aUnit.position.z += MOVEMENT_UNIT;
-      } else {
-        aUnit.position.z -= MOVEMENT_UNIT;
-      }
-    }
-  }
+  );
+
+  processMovement(camera);
 
   renderer.render( scene, camera );
 }
 render();
+
+window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize(){
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+}
