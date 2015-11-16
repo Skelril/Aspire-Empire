@@ -296,11 +296,11 @@ function render() {
           return;
         }
         processMovement(moveable);
-        cameraLookAt(activeUnit);
       }
     );
 
     processMovement(camera);
+    cameraLookAt(activeUnit);
     drawFocusRing();
   }, 1000 / 60);
 
