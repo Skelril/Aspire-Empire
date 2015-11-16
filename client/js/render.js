@@ -173,6 +173,7 @@ function addUnit(uuid, x, z) {
 function setActiveUnit(uuid) {
   activeUnit = units[uuid];
   cameraLookAt(activeUnit);
+  hitSplat(uuid, 1);
 }
 
 function moveUnit(uuid, x, z) {
@@ -206,6 +207,51 @@ camera.position.z = 7;
 camera.targPos = new THREE.Vector3(camera.position.x, camera.position.y, camera.position.z);
 
 camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+// Hit splats
+
+var hitSplats = [];
+
+function hitSplat(uuid, amt) {
+  var unit = units[uuid];
+  if (unit == null) {
+    return;
+  }
+
+  var canvas = document.createElement('canvas');
+  var size = 256;
+  canvas.width = size;
+  canvas.height = size;
+  var context = canvas.getContext('2d');
+
+  context.fillStyle = '#FF0000';
+  context.strokeStyle = context.fillStyle;
+  context.lineJoin = "round";
+  context.lineWidth = 50;
+  context.strokeRect(50 / 2, 50 / 2, size - 50, ((size * 2) / 3) - 50);
+  context.fillRect(50 / 2, 50 / 2, size - 50, ((size * 2) / 3) - 50);
+
+  context.fillStyle = '#FFFFFF';
+  context.textAlign = 'center';
+  context.font = '124px Arial';
+  context.fillText(String(amt), size / 2, size / 2);
+
+  var textMap = new THREE.Texture(canvas);
+  textMap.needsUpdate = true;
+
+  var material = new THREE.SpriteMaterial({
+      map: textMap,
+      transparent: true,
+      depthTest: false
+  });
+
+  var hitSplat = new THREE.Sprite(material);
+  hitSplat.position.set(unit.position.x, unit.position.y, unit.position.z);
+
+  hitSplats.push(hitSplat);
+
+  scene.add(hitSplat);
+}
 
 // Lighting
 var light = new THREE.AmbientLight(0x404040); // soft white light
@@ -281,8 +327,20 @@ function drawFocusRing() {
       for (var ring in focusRings) {
         scene.remove(focusRings[ring]);
       }
+      focusRings = []
     } else {
       _updateFocusRings();
+    }
+  }
+}
+
+function fadeHitSplats() {
+  for (splat in hitSplats) {
+    var hitSplat = hitSplats[splat];
+    hitSplat.scale.set(hitSplat.scale.x * 0.9, hitSplat.scale.y * 0.9, hitSplat.scale.z * 0.9);
+    if (hitSplat.scale.x < .34) {
+      scene.remove(hitSplat);
+      delete hitSplats[splat];
     }
   }
 }
@@ -302,6 +360,7 @@ function render() {
     processMovement(camera);
     cameraLookAt(activeUnit);
     drawFocusRing();
+    fadeHitSplats();
   }, 1000 / 60);
 
   renderer.render(scene, camera);
