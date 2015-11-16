@@ -288,19 +288,21 @@ function drawFocusRing() {
 }
 
 function render() {
-  requestAnimationFrame(render);
+  setTimeout(function() {
+    requestAnimationFrame(render);
 
-  scene.traverse(function(moveable) {
-      if (!moveable.hasOwnProperty("targPos")) {
-        return;
+    scene.traverse(function(moveable) {
+        if (!moveable.hasOwnProperty("targPos")) {
+          return;
+        }
+        processMovement(moveable);
+        cameraLookAt(activeUnit);
       }
-      processMovement(moveable);
-      cameraLookAt(activeUnit);
-    }
-  );
+    );
 
-  processMovement(camera);
-  drawFocusRing();
+    processMovement(camera);
+    drawFocusRing();
+  }, 1000 / 60);
 
   renderer.render(scene, camera);
 }
