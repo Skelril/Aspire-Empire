@@ -3,14 +3,22 @@
   <head>
     <meta charset=utf-8>
     <title>Aspire Empire</title>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      canvas { width: 100%; height: 100%; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/controls.css">
+    <link rel="stylesheet" type="text/css" href="css/render.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r73/three.js"></script>
     <script src="js/controls.js"></script>
   </head>
   <body>
+    <div id="control-panel-toggle"></div>
+    <div id="control-panel">
+      <div id="unit-description">
+        <h3 class="control-panel-element">Unit Details</h3>
+        <div class="control-panel-element">Heath: <span id="health"></span> / <span id="max-health"></span></div>
+        <div class="control-panel-element">Moves: <span id="remaining-movement"></span></div>
+        <div class="control-panel-element">Strength: <span id="hit-power"></span></div>
+        <div class="control-panel-element">Defense: <span id="blocking-power"></span></div>
+      </div>
+    </div>
     <script src="js/render.js"></script>
   </body>
 </html>

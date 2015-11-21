@@ -2,6 +2,19 @@ document.addEventListener('mousedown', onDocumentMouseDown, false);
 window.addEventListener('keydown', onKeyDown, false);
 
 function onDocumentMouseDown(e) {
+  var targ = e.target;
+  if (!targ) {
+    return;
+  }
+
+  if (targ.tagName === "CANVAS") {
+    handleGameContent(e);
+  } else if (targ.id === "control-panel-toggle") {
+    toggleControlPanel();
+  }
+}
+
+function handleGameContent(e) {
   e.preventDefault();
 
   var raycaster = new THREE.Raycaster();
@@ -26,10 +39,31 @@ function onDocumentMouseDown(e) {
   }
 }
 
+function toggleControlPanel() {
+  // Show/Hide the control panel
+  var controlPanel = document.getElementById("control-panel");
+  if (controlPanel.style.display === "none") {
+    controlPanel.style.display = "initial";
+  } else {
+    controlPanel.style.display = "none";
+  }
+
+  // Move the toggle
+  var controlPanelToggle = document.getElementById("control-panel-toggle");
+  if (controlPanelToggle.style.right === "0px") {
+    controlPanelToggle.style.right = "250px";
+  } else {
+    controlPanelToggle.style.right = "0px";
+  }
+}
+
 function onKeyDown(e) {
   var key = e.keyCode ? e.keyCode : e.which;
 
   switch (key) {
+    case 27:
+      setActiveUnit(null);
+      break;
     case 38:
       if (e.shiftKey) {
         adjustCamera(0, 1, 0);

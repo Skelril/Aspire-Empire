@@ -83,6 +83,30 @@ function pocessUnits() {
   moveUnit("ars", 4, 3);
 }
 
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function requestHealth(uuid) {
+  return getRandomInt(0, 200);
+}
+
+function requestMaxHealth(uuid) {
+  return 200;
+}
+
+function requestHitPower(uuid) {
+  return getRandomInt(3, 20);
+}
+
+function requestBlockingPower(uuid) {
+  return getRandomInt(0, 20);
+}
+
+function requestRemainingMovement(uuid) {
+  return getRandomInt(0, 7);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Renderer
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,15 +229,50 @@ function addUnit(uuid, x, z) {
   return unit;
 }
 
+function isActiveUnit(uuid) {
+  return activeUnit != null && uuid === activeUnit.uuid;
+}
+
 function setActiveUnit(uuid) {
-  activeUnit = units[uuid];
-  cameraLookAt(activeUnit);
-  hitSplat(uuid, 1);
+  if (uuid == null) {
+    activeUnit = null;
+  } else if (!isActiveUnit(uuid)) {
+    activeUnit = units[uuid];
+    cameraLookAt(activeUnit);
+    hitSplat(uuid, 10);
+  } else {
+    return;
+  }
+  updateActiveUnitDescription();
+}
+
+function updateActiveUnitDescription() {
+  var description = document.getElementById("unit-description");
+  if (activeUnit == null) {
+    description.style.display = "none";
+  } else {
+    description.style.display = "initial";
+
+    var health = document.getElementById("health");
+    var maxHealth = document.getElementById("max-health");
+    var hitPower = document.getElementById("hit-power");
+    var blockingPower = document.getElementById("blocking-power");
+    var remainingMovement = document.getElementById("remaining-movement");
+
+    health.innerHTML = requestHealth(activeUnit.uuid);
+    maxHealth.innerHTML = requestMaxHealth(activeUnit.uuid);
+    hitPower.innerHTML = requestHitPower(activeUnit.uuid);
+    blockingPower.innerHTML = requestBlockingPower(activeUnit.uuid);
+    remainingMovement.innerHTML = requestRemainingMovement(activeUnit.uuid);
+  }
 }
 
 function moveUnit(uuid, x, z) {
   var unit = units[uuid];
   unit.targPos.set(x + 0.5, map.tiles[x][z].height + (unit.height / 2), z + 0.5);
+  if (isActiveUnit(uuid)) {
+    updateActiveUnitDescription();
+  }
 }
 
 function remUnit(uuid) {
@@ -221,6 +280,9 @@ function remUnit(uuid) {
   scene.remove(unit);
   clickable.remove(unit);
   delete units[uuid];
+  if (isActiveUnit(uuid)) {
+    setActiveUnit(null);
+  }
 }
 
 // Camera Controls
@@ -251,6 +313,10 @@ function hitSplat(uuid, amt) {
   var unit = units[uuid];
   if (unit == null) {
     return;
+  }
+
+  if (isActiveUnit(uuid)) {
+    updateActiveUnitDescription();
   }
 
   var canvas = document.createElement('canvas');

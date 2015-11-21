@@ -1,0 +1,40 @@
+#control-panel-toggle {
+  position: absolute;
+  top: 0px;
+  right: 250px;
+  z-index: 3;
+  width: 5px;
+  height: 100%;
+  background-color: #181818;
+  transition: background-color .5s;
+}
+
+#control-panel-toggle:hover {
+  position: absolute;
+  top: 0px;
+  right: 250px;
+  z-index: 3;
+  width: 5px;
+  height: 100%;
+  background-color: #404040;
+}
+
+#control-panel {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  z-index: 3;
+  width: 250px;
+  height: 100%;
+  background-color: black;
+  opacity: .5;
+  color: white;
+}
+
+#unit-description {
+  display: none;
+}
+
+.control-panel-element {
+  padding-left: 10px;
+}
