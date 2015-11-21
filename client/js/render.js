@@ -67,8 +67,12 @@ function requestMap() {
   ];
 }
 
+function requestAttack(uuid) {
+  hitSplat(uuid, requestHitPower(activeUnit));
+}
+
 function requestMove(x, z) {
-  if (activeUnit != null) {
+  if (isActiveUnitSet()) {
     moveUnit(activeUnit.uuid, x, z);
   }
 }
@@ -81,6 +85,26 @@ function pocessUnits() {
   moveUnit("abc", 3, 4);
   moveUnit("cba", 2, 2);
   moveUnit("ars", 4, 3);
+}
+
+function requestCurrentUserID() {
+  return "test-player";
+}
+
+function requestUnitOwner(uuid) {
+  return uuid == "abc" ? "test-player" : "bob";
+}
+
+function requestUnitOwnerName(uuid) {
+  return uuid == "abc" ? "test-player" : "bob";
+}
+
+function requestTurnOwner() {
+  return "test-player";
+}
+
+function requestIsPlayersTurn() {
+  return requestTurnOwner() == requestCurrentUserID();
 }
 
 function getRandomInt(min, max) {
@@ -230,7 +254,15 @@ function addUnit(uuid, x, z) {
 }
 
 function isActiveUnit(uuid) {
-  return activeUnit != null && uuid === activeUnit.uuid;
+  return isActiveUnitSet() && uuid === activeUnit.uuid;
+}
+
+function isActiveUnitSet() {
+  return activeUnit != null;
+}
+
+function isActiveUnitOwned() {
+  return isActiveUnitSet() && requestUnitOwner(activeUnit.uuid) === requestCurrentUserID();
 }
 
 function setActiveUnit(uuid) {
@@ -239,7 +271,6 @@ function setActiveUnit(uuid) {
   } else if (!isActiveUnit(uuid)) {
     activeUnit = units[uuid];
     cameraLookAt(activeUnit);
-    hitSplat(uuid, 10);
   } else {
     return;
   }
@@ -248,7 +279,7 @@ function setActiveUnit(uuid) {
 
 function updateActiveUnitDescription() {
   var description = document.getElementById("unit-description");
-  if (activeUnit == null) {
+  if (!isActiveUnitSet()) {
     description.style.display = "none";
   } else {
     description.style.display = "initial";
@@ -258,12 +289,17 @@ function updateActiveUnitDescription() {
     var hitPower = document.getElementById("hit-power");
     var blockingPower = document.getElementById("blocking-power");
     var remainingMovement = document.getElementById("remaining-movement");
+    var ownerName = document.getElementById("owner-name");
 
     health.innerHTML = requestHealth(activeUnit.uuid);
     maxHealth.innerHTML = requestMaxHealth(activeUnit.uuid);
     hitPower.innerHTML = requestHitPower(activeUnit.uuid);
     blockingPower.innerHTML = requestBlockingPower(activeUnit.uuid);
     remainingMovement.innerHTML = requestRemainingMovement(activeUnit.uuid);
+    ownerName.innerHTML = requestUnitOwnerName(activeUnit.uuid);
+    if (isActiveUnitOwned()) {
+      ownerName.innerHTML += " (You)";
+    }
   }
 }
 
@@ -424,7 +460,7 @@ function drawFocusRing() {
       }
     }
   } else {
-    if (activeUnit == null) {
+    if (!isActiveUnitSet()) {
       for (var ring in focusRings) {
         scene.remove(focusRings[ring]);
       }

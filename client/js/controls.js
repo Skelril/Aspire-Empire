@@ -29,10 +29,18 @@ function handleGameContent(e) {
       var aspire_type = discoveredObject["aspire_type"];
       switch (aspire_type) {
         case "tile":
-          requestMove(discoveredObject.x, discoveredObject.z);
+          if (isActiveUnitOwned() && requestIsPlayersTurn()) {
+            requestMove(discoveredObject.x, discoveredObject.z);
+          } else {
+            setActiveUnit(null);
+          }
           break;
         case "unit":
-          setActiveUnit(discoveredObject.uuid);
+          if (isActiveUnitOwned() && requestIsPlayersTurn() && requestUnitOwner(discoveredObject.uuid) != requestCurrentUserID()) {
+            requestAttack(discoveredObject.uuid);
+          } else {
+            setActiveUnit(discoveredObject.uuid);
+          }
           break;
       }
     }
