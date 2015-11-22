@@ -125,7 +125,8 @@ function addUnit(game, posX, posZ, unitType, ownerID) {
     maxHealth: unitDefinition.health,
     hitPower: unitDefinition.hitPower,
     blockingPower: unitDefinition.blockingPower,
-    remainingMovement: unitDefinition.movement
+    remainingMovement: unitDefinition.movement,
+    maxMovement: unitDefinition.movement
   }
 }
 

@@ -313,6 +313,7 @@ function updateActiveUnit(unitProfile) {
     var hitPower = document.getElementById("hit-power");
     var blockingPower = document.getElementById("blocking-power");
     var remainingMovement = document.getElementById("remaining-movement");
+    var maxMovement = document.getElementById("max-movement");
     var ownerName = document.getElementById("owner-name");
 
     health.innerHTML = unitProfile.health;
@@ -320,6 +321,7 @@ function updateActiveUnit(unitProfile) {
     hitPower.innerHTML = unitProfile.hitPower;
     blockingPower.innerHTML = unitProfile.blockingPower;
     remainingMovement.innerHTML = unitProfile.remainingMovement;
+    maxMovement.innerHTML = unitProfile.maxMovement;
     activeUnit.owner = unitProfile.owner;
     ownerName.innerHTML = unitProfile.owner;
     if (isActiveUnitOwned()) {
