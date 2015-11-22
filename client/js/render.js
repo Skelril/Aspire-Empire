@@ -259,6 +259,7 @@ function populateSpawnerList(unitDefinitions) {
     var unitName = document.createTextNode(unitDef.name);
     var unitHealth = document.createTextNode("Health: " + unitDef.health);
     var unitHitPower = document.createTextNode("Strength: " + unitDef.hitPower);
+    var unitAttacks = document.createTextNode("Attakcs: " + unitDef.attacks);
     var unitBlockingPower = document.createTextNode("Defense: " + unitDef.blockingPower);
     var movement = document.createTextNode("Movement: " + unitDef.movement);
 
@@ -267,6 +268,8 @@ function populateSpawnerList(unitDefinitions) {
     node.appendChild(unitHealth);
     node.appendChild(document.createElement("BR"));
     node.appendChild(unitHitPower);
+    node.appendChild(document.createElement("BR"));
+    node.appendChild(unitAttacks);
     node.appendChild(document.createElement("BR"));
     node.appendChild(unitBlockingPower);
     node.appendChild(document.createElement("BR"));
@@ -312,6 +315,8 @@ function updateActiveUnit(unitProfile) {
     var maxHealth = document.getElementById("max-health");
     var hitPower = document.getElementById("hit-power");
     var blockingPower = document.getElementById("blocking-power");
+    var attacks = document.getElementById("attacks");
+    var maxAttacks = document.getElementById("max-attacks");
     var remainingMovement = document.getElementById("remaining-movement");
     var maxMovement = document.getElementById("max-movement");
     var ownerName = document.getElementById("owner-name");
@@ -320,10 +325,14 @@ function updateActiveUnit(unitProfile) {
     maxHealth.innerHTML = unitProfile.maxHealth;
     hitPower.innerHTML = unitProfile.hitPower;
     blockingPower.innerHTML = unitProfile.blockingPower;
+    attacks.innerHTML = unitProfile.attacks;
+    maxAttacks.innerHTML = unitProfile.maxAttacks;
     remainingMovement.innerHTML = unitProfile.remainingMovement;
     maxMovement.innerHTML = unitProfile.maxMovement;
-    activeUnit.owner = unitProfile.owner;
     ownerName.innerHTML = unitProfile.owner;
+
+    activeUnit.owner = unitProfile.owner;
+
     if (isActiveUnitOwned()) {
       ownerName.innerHTML += " (You)";
     }

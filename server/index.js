@@ -90,6 +90,7 @@ function createGame(game, player) {
       health: 200,
       hitPower: 5,
       blockingPower: 5,
+      attacks: 7,
       movement: 1
     };
     newGame.unitDefinitions["Magician"] = {
@@ -97,6 +98,7 @@ function createGame(game, player) {
       health: 45,
       hitPower: 33,
       blockingPower: 7,
+      attacks: 1,
       movement: 10
     };
     newGame.unitDefinitions["Green Cube"] = {
@@ -104,6 +106,7 @@ function createGame(game, player) {
       health: 65,
       hitPower: 1,
       blockingPower: 15,
+      attacks: 100,
       movement: 10
     };
 
@@ -125,6 +128,8 @@ function addUnit(game, posX, posZ, unitType, ownerID) {
     maxHealth: unitDefinition.health,
     hitPower: unitDefinition.hitPower,
     blockingPower: unitDefinition.blockingPower,
+    attacks: unitDefinition.attacks,
+    maxAttacks: unitDefinition.attacks,
     remainingMovement: unitDefinition.movement,
     maxMovement: unitDefinition.movement
   }
@@ -200,6 +205,12 @@ io.on('connection', function(socket) {
         return;
       }
 
+      if (attacker.attacks <= 0) {
+        return;
+      }
+
+      --attacker.attacks;
+
       var damageAmt = Math.max(0, attacker.hitPower - defender.blockingPower);
       damageAmt = Math.min(defender.health, damageAmt);
       defender.health -= damageAmt;
@@ -234,14 +245,25 @@ io.on('connection', function(socket) {
 
     socket.on('move unit', function(data) {
       var unit = game.units[data.unit];
-      unit.x = data.newX;
-      unit.z = data.newZ;
 
-      io.to(game.id).emit('move unit', {
-        unit: data.unit,
-        newX: data.newX,
-        newZ: data.newZ
-      });
+      if (unit.remainingMovement <= 0) {
+        return;
+      }
+
+      var xDiff = Math.abs(unit.x - data.newX);
+      var zDiff = Math.abs(unit.z - data.newZ)
+      if ((xDiff === 1 && zDiff === 0) || (zDiff === 1 && xDiff === 0)) {
+        --unit.remainingMovement;
+
+        unit.x = data.newX;
+        unit.z = data.newZ;
+
+        io.to(game.id).emit('move unit', {
+          unit: data.unit,
+          newX: data.newX,
+          newZ: data.newZ
+        });
+      }
     });
   });
   socket.on('disconnect', function() {
