@@ -11,6 +11,8 @@ function onDocumentMouseDown(e) {
     handleGameContent(e);
   } else if (targ.id === "control-panel-toggle") {
     toggleControlPanel();
+  } else if (targ.className === "control-panel-element control-panel-unit-description") {
+    requestUnitSpawn(targ.unitType);
   }
 }
 
@@ -29,11 +31,18 @@ function handleGameContent(e) {
       var aspire_type = discoveredObject["aspire_type"];
       switch (aspire_type) {
         case "tile":
-          if (isActiveUnitOwned() && requestIsPlayersTurn()) {
-            requestMove(discoveredObject.x, discoveredObject.z);
-          } else {
-            setActiveUnit(null);
+          if (requestIsPlayersTurn()) {
+            if (isActiveUnitOwned()) {
+              requestMove(discoveredObject.x, discoveredObject.z);
+              break;
+            }
+            if (discoveredObject.tile_type === "spawner") {
+              if (requestCanUseSpawner(discoveredObject.x, discoveredObject.z)) {
+                activateSpawner(discoveredObject.x, discoveredObject.z);
+              }
+            }
           }
+          setActiveUnit(null);
           break;
         case "unit":
           if (isActiveUnitOwned() && requestIsPlayersTurn() && requestUnitOwner(discoveredObject.uuid) != requestCurrentUserID()) {
@@ -70,6 +79,7 @@ function onKeyDown(e) {
 
   switch (key) {
     case 27:
+      deactiveSpawner();
       setActiveUnit(null);
       break;
     case 38:

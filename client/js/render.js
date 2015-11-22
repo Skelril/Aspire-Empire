@@ -8,13 +8,13 @@ function requestMap() {
     {x: 0, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 0, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 0, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 0, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 0, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0, type: "spawner"},
     {x: 1, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 1, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 1, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 1, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 1, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 2, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 2, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0, type: "spawner"},
     {x: 2, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 2, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 2, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
@@ -23,7 +23,7 @@ function requestMap() {
     {x: 3, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 3, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 3, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 3, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
+    {x: 3, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0, type: "spawner"},
     {x: 4, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 4, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
     {x: 4, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
@@ -74,6 +74,25 @@ function requestAttack(uuid) {
 function requestMove(x, z) {
   if (isActiveUnitSet()) {
     moveUnit(activeUnit.uuid, x, z);
+  }
+}
+
+function requestCanUseSpawner(x, z) {
+  return true;
+}
+
+function requetListOfSpawnableUnits(x, z) {
+  return [
+    {name: "Death Stalker", health: 200, hitPower: 5, blockingPower: 5},
+    {name: "Magician", health: 45, hitPower: 33, blockingPower: 7},
+    {name: "Green Cube", health: 65, hitPower: 1, blockingPower: 34},
+  ]
+}
+
+function requestUnitSpawn(unitType) {
+  if (isSpawnerActive()) {
+    addUnit("asdf", activeSpawner.x, activeSpawner.z);
+    deactiveSpawner();
   }
 }
 
@@ -172,7 +191,13 @@ function _getMin(existingVal, newVal) {
 
 
 function addTile(tileDef) {
+  var tileType = "default";
+  if (tileDef.hasOwnProperty("type")) {
+    tileType = tileDef.type;
+  }
+
   var tile = _addTile(
+    tileType,
     tileDef.x + 0, tileDef.z + 0, // a
     tileDef.x + 0, tileDef.z + 1, // b
     tileDef.x + 1, tileDef.z + 0, // c
@@ -189,6 +214,7 @@ function addTile(tileDef) {
   tile.z = tileDef.z;
   tile.height = (tileDef.seH + tileDef.swH + tileDef.neH + tileDef.nwH) / 4;
   tile.def = tileDef;
+  tile.tile_type = tileType;
   tile.aspire_type = "tile";
 
   map.minX = _getMin(map.minX, tile.x);
@@ -206,14 +232,18 @@ function addTile(tileDef) {
   clickable.push(tile);
 }
 
-function _addTile(ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
+function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
   var geometry = new THREE.PlaneGeometry(5, 5, 1, 1);
   geometry.vertices[0] = new THREE.Vector3(ax, ha, az);
   geometry.vertices[1] = new THREE.Vector3(bx, hb, bz);
   geometry.vertices[2] = new THREE.Vector3(cx, hc, cz);
   geometry.vertices[3] = new THREE.Vector3(dx, hd, dz);
 
-  var material = new THREE.MeshPhongMaterial({ color: 0x6F6CC5, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  if (type === "default") {
+    var material = new THREE.MeshPhongMaterial({ color: 0x6F6CC5, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  } else if (type == "spawner") {
+    var material = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  }
   return new THREE.Mesh(geometry, material);
 }
 
@@ -226,6 +256,7 @@ function loadMap(tileMap) {
 // Unit Management
 
 var units = {}
+var activeSpawner = null;
 var activeUnit = null;
 
 function _initUnitAt(unit, x, z) {
@@ -253,6 +284,54 @@ function addUnit(uuid, x, z) {
   return unit;
 }
 
+function activateSpawner(x, z) {
+  activeSpawner = map.tiles[x][z];
+  updateSpawnList();
+}
+
+function isSpawnerActive() {
+  return activeSpawner != null;
+}
+
+function deactiveSpawner() {
+  activeSpawner = null;
+  updateSpawnList();
+}
+
+function updateSpawnList() {
+  var spawnerControl = document.getElementById("spawner-control");
+  if (!isSpawnerActive()) {
+    spawnerControl.style.display = "none";
+  } else {
+    spawnerControl.style.display = "initial";
+
+    var unitList = document.getElementById("unit-list");
+    unitList.innerHTML = "";
+
+    var spawnableUnits = requetListOfSpawnableUnits(activeSpawner.x, activeSpawner.z);
+    for (var unit in spawnableUnits) {
+      var unitDescription = spawnableUnits[unit];
+      var node = document.createElement("DIV");
+      node.className = "control-panel-element control-panel-unit-description";
+      node.unitType = unitDescription.name;
+      var unitName = document.createTextNode(unitDescription.name);
+      var unitHealth = document.createTextNode("Health: " + unitDescription.health);
+      var unitHitPower = document.createTextNode("Strength: " + unitDescription.hitPower);
+      var unitBlockingPower = document.createTextNode("Defense: " + unitDescription.blockingPower);
+
+      node.appendChild(unitName);
+      node.appendChild(document.createElement("BR"));
+      node.appendChild(unitHealth);
+      node.appendChild(document.createElement("BR"));
+      node.appendChild(unitHitPower);
+      node.appendChild(document.createElement("BR"));
+      node.appendChild(unitBlockingPower);
+
+      unitList.appendChild(node);
+    }
+  }
+}
+
 function isActiveUnit(uuid) {
   return isActiveUnitSet() && uuid === activeUnit.uuid;
 }
@@ -271,6 +350,7 @@ function setActiveUnit(uuid) {
   } else if (!isActiveUnit(uuid)) {
     activeUnit = units[uuid];
     cameraLookAt(activeUnit);
+    deactiveSpawner();
   } else {
     return;
   }

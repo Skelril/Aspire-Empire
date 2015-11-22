@@ -31,10 +31,25 @@
   color: white;
 }
 
+#spawner-control {
+  display: none;
+}
+
 #unit-description {
   display: none;
 }
 
 .control-panel-element {
   padding-left: 10px;
+}
+
+.control-panel-unit-description {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: black;
+  transition: background-color .5s;
+}
+
+.control-panel-unit-description:hover {
+  background-color: red;
 }
