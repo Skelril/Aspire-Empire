@@ -200,7 +200,8 @@ io.on('connection', function(socket) {
       }
 
       var damageAmt = Math.max(0, attacker.hitPower - defender.blockingPower);
-      defender.health -= Math.min(defender.health, damageAmt);
+      damageAmt = Math.min(defender.health, damageAmt);
+      defender.health -= damageAmt;
       io.to(game.id).emit('hitsplat', {
         unit: defender.id,
         damage: damageAmt
@@ -215,7 +216,8 @@ io.on('connection', function(socket) {
       }
 
       damageAmt = Math.max(0, defender.hitPower - attacker.blockingPower);
-      attacker.health -= Math.min(attacker.health, damageAmt);
+      damageAmt = Math.min(attacker.health, damageAmt);
+      attacker.health -= damageAmt;
       io.to(game.id).emit('hitsplat', {
         unit: attacker.id,
         damage: damageAmt
