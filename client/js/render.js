@@ -73,6 +73,7 @@ socket.on('spawner populate', function(data) {
 
 socket.on('turn change', function(data) {
   turnOwner = data.turnOwner;
+  deactiveSpawner();
   requestActiveUnitUpdate();
 });
 
