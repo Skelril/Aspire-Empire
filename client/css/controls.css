@@ -29,6 +29,11 @@
   background-color: black;
   opacity: .5;
   color: white;
+  transition: opacity .5s;
+}
+
+#control-panel:hover {
+  opacity: 1;
 }
 
 #spawner-control {
