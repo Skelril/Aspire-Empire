@@ -9,8 +9,21 @@
     <script src="js/controls.js"></script>
   </head>
   <body>
+    <div id="start-screen">
+    	<label for="input-game-id">Game: </label>
+      <input id="input-game-id" type="text"/>
+      <label for="input-player-id">Nickname: </label>
+      <input id="input-player-id" type="text"/>
+      <button id="start-game">Start / Join</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+    </script>
     <div id="control-panel-toggle"></div>
     <div id="control-panel">
+      <h2 class="control-panel-element">Game</h2>
+      <div class="control-panel-element">Game ID: <span id="active-game-id"></span></div>
       <div id="stock-information">
         <h3 class="control-panel-element">Empire Vitals</h3>
         <div class="control-panel-element">Funds: <span id="coins"></span></div>

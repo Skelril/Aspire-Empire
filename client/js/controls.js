@@ -11,6 +11,8 @@ function onDocumentMouseDown(e) {
     handleGameContent(e);
   } else if (targ.id === "control-panel-toggle") {
     toggleControlPanel(e);
+  } else if (targ.id === "start-game") {
+    handleGameStart();
   } else if (targ.className === "control-panel-element control-panel-unit-description") {
     requestUnitSpawn(targ.unitType);
   }
@@ -31,21 +33,19 @@ function handleGameContent(e) {
       var aspire_type = discoveredObject["aspire_type"];
       switch (aspire_type) {
         case "tile":
-          if (requestIsPlayersTurn()) {
+          if (isPlayersTurn()) {
             if (isActiveUnitOwned()) {
               requestMove(discoveredObject.x, discoveredObject.z);
               break;
             }
             if (discoveredObject.tile_type === "spawner") {
-              if (requestCanUseSpawner(discoveredObject.x, discoveredObject.z)) {
-                activateSpawner(discoveredObject.x, discoveredObject.z);
-              }
+              resquestSpawnerFocus(discoveredObject.x, discoveredObject.z);
             }
           }
           setActiveUnit(null);
           break;
         case "unit":
-          if (isActiveUnitOwned() && requestIsPlayersTurn() && requestUnitOwner(discoveredObject.uuid) != requestCurrentUserID()) {
+          if (isActiveUnitOwned() && isPlayersTurn()) {
             requestAttack(discoveredObject.uuid);
           } else {
             setActiveUnit(discoveredObject.uuid);
@@ -74,6 +74,16 @@ function toggleControlPanel(e) {
   } else {
     controlPanelToggle.style.right = "0px";
   }
+}
+
+function handleGameStart() {
+  gameName = document.getElementById("input-game-id").value;
+  cliPlayer = document.getElementById("input-player-id").value;
+
+  document.getElementById('start-screen').style.display = "none";
+  document.getElementById('active-game-id').innerHTML = gameName;
+
+  requestJoinGame();
 }
 
 function onKeyDown(e) {

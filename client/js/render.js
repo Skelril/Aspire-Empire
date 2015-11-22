@@ -2,152 +2,85 @@
 // Server Interface
 ////////////////////////////////////////////////////////////////////////////////
 
-function requestMap() {
-  return [
-    {x: 0, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 0, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 0, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 0, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 0, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0, type: "spawner"},
-    {x: 1, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 1, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 1, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 1, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 1, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 2, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0, type: "spawner"},
-    {x: 2, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 2, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 2, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 2, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 3, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 3, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 3, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 3, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 3, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0, type: "spawner"},
-    {x: 4, z: 0, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 4, z: 1, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 4, z: 2, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 4, z: 3, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 4, z: 4, seH: 0, swH: 0, neH: 0, nwH: 0},
-    {x: 5, z: 0, seH: 0, swH: 0, neH: .25, nwH: .25},
-    {x: 5, z: 1, seH: 0, swH: 0, neH: .25, nwH: .25},
-    {x: 5, z: 2, seH: 0, swH: 0, neH: .25, nwH: .25},
-    {x: 5, z: 3, seH: 0, swH: 0, neH: .25, nwH: .25},
-    {x: 5, z: 4, seH: 0, swH: 0, neH: .25, nwH: .25},
-    {x: 6, z: 0, seH: .25, swH: .25, neH: .5, nwH: .5},
-    {x: 6, z: 1, seH: .25, swH: .25, neH: .5, nwH: .5},
-    {x: 6, z: 2, seH: .25, swH: .25, neH: .5, nwH: .5},
-    {x: 6, z: 3, seH: .25, swH: .25, neH: .5, nwH: .5},
-    {x: 6, z: 4, seH: .25, swH: .25, neH: .5, nwH: .5},
-    {x: 7, z: 0, seH: .5, swH: .5, neH: .75, nwH: .75},
-    {x: 7, z: 1, seH: .5, swH: .5, neH: .75, nwH: .75},
-    {x: 7, z: 2, seH: .5, swH: .5, neH: .75, nwH: .75},
-    {x: 7, z: 3, seH: .5, swH: .5, neH: .75, nwH: .75},
-    {x: 7, z: 4, seH: .5, swH: .5, neH: .75, nwH: .75},
-    {x: 8, z: 0, seH: .75, swH: .75, neH: 1, nwH: 1},
-    {x: 8, z: 1, seH: .75, swH: .75, neH: 1, nwH: 1},
-    {x: 8, z: 2, seH: .75, swH: .75, neH: 1, nwH: 1},
-    {x: 8, z: 3, seH: .75, swH: .75, neH: 1, nwH: 1},
-    {x: 8, z: 4, seH: .75, swH: .75, neH: 1, nwH: 1},
-    {x: 9, z: 0, seH: 1, swH: 1, neH: 1.25, nwH: 1.25},
-    {x: 9, z: 1, seH: 1, swH: 1, neH: 1.25, nwH: 1.25},
-    {x: 9, z: 2, seH: 1, swH: 1, neH: 1.25, nwH: 1.25},
-    {x: 9, z: 3, seH: 1, swH: 1, neH: 1.25, nwH: 1.25},
-    {x: 9, z: 4, seH: 1, swH: 1, neH: 1.25, nwH: 1.25},
-    {x: 10, z: 0, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 10, z: 1, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 10, z: 2, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 10, z: 3, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 10, z: 4, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 11, z: 0, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 11, z: 1, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 11, z: 2, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 11, z: 3, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25},
-    {x: 11, z: 4, seH: 1.25, swH: 1.25, neH: 1.25, nwH: 1.25}
-  ];
+var turnOwner;
+var gameName;
+var cliPlayer;
+
+function requestJoinGame() {
+  socket.emit('join game', {game: gameName, player: cliPlayer});
 }
 
 function requestAttack(uuid) {
-  hitSplat(uuid, requestHitPower(activeUnit));
+  socket.emit('attack unit', {attacker: activeUnit.uuid, defender: uuid});
 }
 
 function requestMove(x, z) {
   if (isActiveUnitSet()) {
-    moveUnit(activeUnit.uuid, x, z);
+    socket.emit('move unit', {unit: activeUnit.uuid, newX: x, newZ: z});
   }
 }
 
-function requestCanUseSpawner(x, z) {
-  return true;
+function resquestSpawnerFocus(xPos, zPos) {
+  socket.emit('spawner populate', {x: xPos, z: zPos});
 }
 
-function requetListOfSpawnableUnits(x, z) {
-  return [
-    {name: "Death Stalker", health: 200, hitPower: 5, blockingPower: 5},
-    {name: "Magician", health: 45, hitPower: 33, blockingPower: 7},
-    {name: "Green Cube", health: 65, hitPower: 1, blockingPower: 34},
-  ]
-}
-
-function requestUnitSpawn(unitType) {
+function requestUnitSpawn(unitTypeName) {
   if (isSpawnerActive()) {
-    addUnit("asdf", activeSpawner.x, activeSpawner.z);
+    socket.emit('spawn unit', {unitType: unitTypeName, x: activeSpawner.x, z: activeSpawner.z});
     deactiveSpawner();
   }
 }
 
-function pocessUnits() {
-  addUnit("abc", 0, 0);
-  addUnit("cba", 0, 2);
-  addUnit("ars", 0, 4);
-
-  moveUnit("abc", 3, 4);
-  moveUnit("cba", 2, 2);
-  moveUnit("ars", 4, 3);
+function requestActiveUnitUpdate() {
+  if (isActiveUnitSet()) {
+    socket.emit('get unit details', {unit: activeUnit.uuid});
+  } else {
+    updateActiveUnit();
+  }
 }
 
-function requestCurrentUserID() {
-  return "test-player";
-}
+socket.on('hitsplat', function(data) {
+  hitSplat(data.unit, data.damage);
+})
 
-function requestUnitOwner(uuid) {
-  return uuid == "abc" ? "test-player" : "bob";
-}
+socket.on('funds change', function(data) {
+  updateFunds(data.newFunds);
+});
 
-function requestUnitOwnerName(uuid) {
-  return uuid == "abc" ? "test-player" : "bob";
-}
+socket.on('map change', function(data) {
+  loadMap(data.map);
+})
 
-function requestTurnOwner() {
-  return "test-player";
-}
+socket.on('spawn unit', function(data) {
+  addUnit(data.unit, data.x, data.z);
+});
 
-function requestIsPlayersTurn() {
-  return requestTurnOwner() == requestCurrentUserID();
-}
+socket.on('kill unit', function(data) {
+  remUnit(data.unit);
+})
 
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+socket.on('spawner activate', function(data) {
+  activateSpawner(data.x, data.z);
+})
 
-function requestHealth(uuid) {
-  return getRandomInt(0, 200);
-}
+socket.on('spawner populate', function(data) {
+  populateSpawnerList(data.unitDefinitions);
+});
 
-function requestMaxHealth(uuid) {
-  return 200;
-}
+socket.on('turn change', function(data) {
+  turnOwner = data.turnOwner;
+})
 
-function requestHitPower(uuid) {
-  return getRandomInt(3, 20);
-}
+socket.on('move unit', function(data) {
+  moveUnit(data.unit, data.newX, data.newZ);
+});
 
-function requestBlockingPower(uuid) {
-  return getRandomInt(0, 20);
-}
+socket.on('active unit update', function(data) {
+  updateActiveUnit(data.unitProfile);
+});
 
-function requestRemainingMovement(uuid) {
-  return getRandomInt(0, 7);
+function isPlayersTurn() {
+  return turnOwner === cliPlayer;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -253,6 +186,13 @@ function loadMap(tileMap) {
   }
 }
 
+// Empire details
+
+function updateFunds(newVal) {
+  var coins = document.getElementById('coins');
+  coins.innerHTML = newVal;
+}
+
 // Unit Management
 
 var units = {}
@@ -304,31 +244,35 @@ function updateSpawnList() {
     spawnerControl.style.display = "none";
   } else {
     spawnerControl.style.display = "initial";
+  }
+}
 
-    var unitList = document.getElementById("unit-list");
-    unitList.innerHTML = "";
+function populateSpawnerList(unitDefinitions) {
+  var unitList = document.getElementById("unit-list");
+  unitList.innerHTML = "";
 
-    var spawnableUnits = requetListOfSpawnableUnits(activeSpawner.x, activeSpawner.z);
-    for (var unit in spawnableUnits) {
-      var unitDescription = spawnableUnits[unit];
-      var node = document.createElement("DIV");
-      node.className = "control-panel-element control-panel-unit-description";
-      node.unitType = unitDescription.name;
-      var unitName = document.createTextNode(unitDescription.name);
-      var unitHealth = document.createTextNode("Health: " + unitDescription.health);
-      var unitHitPower = document.createTextNode("Strength: " + unitDescription.hitPower);
-      var unitBlockingPower = document.createTextNode("Defense: " + unitDescription.blockingPower);
+  for (var def in unitDefinitions) {
+    var unitDef = unitDefinitions[def];
+    var node = document.createElement("DIV");
+    node.className = "control-panel-element control-panel-unit-description";
+    node.unitType = unitDef.name;
+    var unitName = document.createTextNode(unitDef.name);
+    var unitHealth = document.createTextNode("Health: " + unitDef.health);
+    var unitHitPower = document.createTextNode("Strength: " + unitDef.hitPower);
+    var unitBlockingPower = document.createTextNode("Defense: " + unitDef.blockingPower);
+    var movement = document.createTextNode("Movement: " + unitDef.movement);
 
-      node.appendChild(unitName);
-      node.appendChild(document.createElement("BR"));
-      node.appendChild(unitHealth);
-      node.appendChild(document.createElement("BR"));
-      node.appendChild(unitHitPower);
-      node.appendChild(document.createElement("BR"));
-      node.appendChild(unitBlockingPower);
+    node.appendChild(unitName);
+    node.appendChild(document.createElement("BR"));
+    node.appendChild(unitHealth);
+    node.appendChild(document.createElement("BR"));
+    node.appendChild(unitHitPower);
+    node.appendChild(document.createElement("BR"));
+    node.appendChild(unitBlockingPower);
+    node.appendChild(document.createElement("BR"));
+    node.appendChild(movement);
 
-      unitList.appendChild(node);
-    }
+    unitList.appendChild(node);
   }
 }
 
@@ -341,7 +285,7 @@ function isActiveUnitSet() {
 }
 
 function isActiveUnitOwned() {
-  return isActiveUnitSet() && requestUnitOwner(activeUnit.uuid) === requestCurrentUserID();
+  return isActiveUnitSet() && activeUnit.owner === cliPlayer;
 }
 
 function setActiveUnit(uuid) {
@@ -354,10 +298,10 @@ function setActiveUnit(uuid) {
   } else {
     return;
   }
-  updateActiveUnitDescription();
+  requestActiveUnitUpdate();
 }
 
-function updateActiveUnitDescription() {
+function updateActiveUnit(unitProfile) {
   var description = document.getElementById("unit-description");
   if (!isActiveUnitSet()) {
     description.style.display = "none";
@@ -371,12 +315,13 @@ function updateActiveUnitDescription() {
     var remainingMovement = document.getElementById("remaining-movement");
     var ownerName = document.getElementById("owner-name");
 
-    health.innerHTML = requestHealth(activeUnit.uuid);
-    maxHealth.innerHTML = requestMaxHealth(activeUnit.uuid);
-    hitPower.innerHTML = requestHitPower(activeUnit.uuid);
-    blockingPower.innerHTML = requestBlockingPower(activeUnit.uuid);
-    remainingMovement.innerHTML = requestRemainingMovement(activeUnit.uuid);
-    ownerName.innerHTML = requestUnitOwnerName(activeUnit.uuid);
+    health.innerHTML = unitProfile.health;
+    maxHealth.innerHTML = unitProfile.maxHealth;
+    hitPower.innerHTML = unitProfile.hitPower;
+    blockingPower.innerHTML = unitProfile.blockingPower;
+    remainingMovement.innerHTML = unitProfile.remainingMovement;
+    activeUnit.owner = unitProfile.owner;
+    ownerName.innerHTML = unitProfile.owner;
     if (isActiveUnitOwned()) {
       ownerName.innerHTML += " (You)";
     }
@@ -387,14 +332,16 @@ function moveUnit(uuid, x, z) {
   var unit = units[uuid];
   unit.targPos.set(x + 0.5, map.tiles[x][z].height + (unit.height / 2), z + 0.5);
   if (isActiveUnit(uuid)) {
-    updateActiveUnitDescription();
+    requestActiveUnitUpdate();
   }
 }
 
 function remUnit(uuid) {
   var unit = units[uuid];
   scene.remove(unit);
-  clickable.remove(unit);
+  clickable = clickable.filter(function (el) {
+    return el.uuid !== uuid;
+  });
   delete units[uuid];
   if (isActiveUnit(uuid)) {
     setActiveUnit(null);
@@ -432,7 +379,7 @@ function hitSplat(uuid, amt) {
   }
 
   if (isActiveUnit(uuid)) {
-    updateActiveUnitDescription();
+    requestActiveUnitUpdate();
   }
 
   var canvas = document.createElement('canvas');
@@ -477,10 +424,6 @@ scene.add( light );
 var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.position.set(0, 1, 0);
 scene.add( directionalLight );
-
-// Load game data
-loadMap(requestMap(""));
-pocessUnits("");
 
 // Rendering & Movement constants
 var MOVEMENT_PRECISION = 1;
