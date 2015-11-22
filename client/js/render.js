@@ -355,7 +355,7 @@ function moveUnit(uuid, x, z) {
 function remUnit(uuid) {
   var unit = units[uuid];
   scene.remove(unit);
-  clickable = clickable.filter(function (el) {
+  clickable = clickable.filter(function(el) {
     return el.uuid !== uuid;
   });
   delete units[uuid];

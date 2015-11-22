@@ -138,9 +138,11 @@ function addUnit(game, posX, posZ, unitType, ownerID) {
 
 io.on('connection', function(socket) {
   console.log('User connected!');
+  var player;
+  var game;
   socket.on('join game', function(data) {
-    var player = data.player;
-    var game = createGame(data.game, player);
+    player = data.player;
+    game = createGame(data.game, player);
 
     socket.join(game.id);
     game.turnQueue.push(player);
@@ -302,7 +304,36 @@ io.on('connection', function(socket) {
     });
   });
   socket.on('disconnect', function() {
-    console.log('user disconnected');
+    if (game != undefined && player != undefined) {
+      for (unitIndex in game.units) {
+        var unit = game.units[unitIndex];
+        var condition = unit.owner === player;
+        if (condition) {
+          io.to(game.id).emit('kill unit', {
+            unit: unit.id
+          });
+          delete game.units[unitIndex];
+        }
+      }
+
+      var wasUsersTurn = game.turnQueue[game.turnIndex] === player;
+      game.turnQueue = game.turnQueue.filter(function(el) {
+        return el !== player;
+      });
+
+      if (wasUsersTurn) {
+        game.turnIndex = game.turnIndex % game.turnQueue.length;
+        io.to(game.id).emit('turn change', {
+          turnOwner: game.turnQueue[game.turnIndex]
+        });
+      }
+    }
+
+    if (player != undefined) {
+      console.log(player + ' disconnected.');
+    } else {
+      console.log('User disconnected.');
+    }
   });
 });
 
