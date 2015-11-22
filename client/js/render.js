@@ -454,7 +454,25 @@ function hitSplat(uuid, amt) {
   });
 
   var hitSplat = new THREE.Sprite(material);
-  hitSplat.position.set(unit.position.x, unit.position.y, unit.position.z);
+
+  var yPos = unit.position.y;
+  var updated;
+  do {
+    updated = false;
+
+    hitSplat.position.set(unit.position.x, yPos, unit.position.z);
+
+    for (var hitSplatIndex in hitSplats) {
+      var aHitSplat = hitSplats[hitSplatIndex];
+      if (aHitSplat.position.x === unit.position.x && aHitSplat.position.z === unit.position.z) {
+        if (aHitSplat.position.y === yPos) {
+          yPos += .5;
+          updated = true;
+          break;
+        }
+      }
+    }
+  } while (updated);
 
   hitSplats.push(hitSplat);
 
