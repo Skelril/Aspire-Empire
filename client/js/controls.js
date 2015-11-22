@@ -14,7 +14,7 @@ function onDocumentMouseDown(e) {
   } else if (targ.id === "start-game") {
     handleGameStart();
   } else if (targ.id === "end-turn") {
-    requestEndTurn();
+    handleEndTurn(e);
   } else if (targ.className === "control-panel-element control-panel-unit-description") {
     requestUnitSpawn(targ.unitType);
   }
@@ -86,6 +86,12 @@ function handleGameStart() {
   document.getElementById('active-game-id').innerHTML = gameName;
 
   requestJoinGame();
+}
+
+function handleEndTurn(e) {
+  e.preventDefault();
+
+  requestEndTurn();
 }
 
 function onKeyDown(e) {

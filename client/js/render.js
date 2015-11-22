@@ -73,6 +73,7 @@ socket.on('spawner populate', function(data) {
 
 socket.on('turn change', function(data) {
   turnOwner = data.turnOwner;
+  updateTurnButton();
   deactiveSpawner();
   requestActiveUnitUpdate();
 });
@@ -197,6 +198,15 @@ function loadMap(tileMap) {
 function updateFunds(newVal) {
   var coins = document.getElementById('coins');
   coins.innerHTML = newVal;
+}
+
+function updateTurnButton() {
+  var description = document.getElementById("end-turn");
+  if (!isPlayersTurn()) {
+    description.style.display = "none";
+  } else {
+    description.style.display = "initial";
+  }
 }
 
 // Unit Management
