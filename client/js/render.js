@@ -96,6 +96,7 @@ function isPlayersTurn() {
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+var loader = new THREE.TextureLoader();
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -179,10 +180,26 @@ function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
   geometry.vertices[2] = new THREE.Vector3(cx, hc, cz);
   geometry.vertices[3] = new THREE.Vector3(dx, hd, dz);
 
+  var material;
   if (type === "default") {
-    var material = new THREE.MeshPhongMaterial({ color: 0x6F6CC5, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-  } else if (type == "spawner") {
-    var material = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var texture = loader.load("textures/halfdrygrass.jpg");
+
+    material = new THREE.MeshPhongMaterial({
+      color: 0x00FF00,
+      specular: 0x555555,
+      shininess: 30,
+      map: texture,
+      side: THREE.DoubleSide
+    });
+  } else if (type === "spawner") {
+    var texture = loader.load("textures/greystone003x500.png");
+    material = new THREE.MeshPhongMaterial({
+      color: 0x8C8C8C,
+      specular: 0x555555,
+      shininess: 30,
+      map: texture,
+      side: THREE.DoubleSide
+    });
   }
   return new THREE.Mesh(geometry, material);
 }
@@ -492,14 +509,17 @@ function _updateFocusRings() {
     } else {
       focusRing.rotateY(.1);
     }
+    focusRing.rotateZ(.1);
   }
 }
 
 function drawFocusRing() {
   if (focusRings.length === 0) {
-    if (activeUnit != null) {
+    if (isActiveUnitSet()) {
       var geometry = new THREE.RingGeometry(0.5, 0.6, 32);
-      var material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide});
+      var texture = loader.load("textures/blue_left.png");
+      // sdfsdfsdfsd
+      var material = new THREE.MeshBasicMaterial({color: 0x0000FF, map: texture, side: THREE.DoubleSide});
       focusRings = [
         new THREE.Mesh(geometry, material),
         new THREE.Mesh(geometry, material)
