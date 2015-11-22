@@ -10,6 +10,10 @@ function requestJoinGame() {
   socket.emit('join game', {game: gameName, player: cliPlayer});
 }
 
+function requestEndTurn() {
+  socket.emit('end turn', {});
+}
+
 function requestAttack(uuid) {
   socket.emit('attack unit', {attacker: activeUnit.uuid, defender: uuid});
 }
@@ -41,7 +45,7 @@ function requestActiveUnitUpdate() {
 
 socket.on('hitsplat', function(data) {
   hitSplat(data.unit, data.damage);
-})
+});
 
 socket.on('funds change', function(data) {
   updateFunds(data.newFunds);
@@ -49,7 +53,7 @@ socket.on('funds change', function(data) {
 
 socket.on('map change', function(data) {
   loadMap(data.map);
-})
+});
 
 socket.on('spawn unit', function(data) {
   addUnit(data.unit, data.x, data.z);
@@ -57,11 +61,11 @@ socket.on('spawn unit', function(data) {
 
 socket.on('kill unit', function(data) {
   remUnit(data.unit);
-})
+});
 
 socket.on('spawner activate', function(data) {
   activateSpawner(data.x, data.z);
-})
+});
 
 socket.on('spawner populate', function(data) {
   populateSpawnerList(data.unitDefinitions);
@@ -69,7 +73,8 @@ socket.on('spawner populate', function(data) {
 
 socket.on('turn change', function(data) {
   turnOwner = data.turnOwner;
-})
+  requestActiveUnitUpdate();
+});
 
 socket.on('move unit', function(data) {
   moveUnit(data.unit, data.newX, data.newZ);

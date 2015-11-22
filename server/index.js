@@ -5,7 +5,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-app.use(express.static('public'));
+app.use(express.static('../client'));
 
 function requestMap() {
   return [
@@ -79,7 +79,8 @@ function createGame(game, player) {
     var newGame = games[game] = {
       id: game,
       map: requestMap(),
-      turnOwner: player,
+      turnIndex: 0,
+      turnQueue: [],
       units: {},
       unitDefinitions: {}
     }
@@ -142,6 +143,7 @@ io.on('connection', function(socket) {
     var game = createGame(data.game, player);
 
     socket.join(game.id);
+    game.turnQueue.push(player);
     console.log(player + ' has joined game ' + game.id);
 
     socket.emit('map change', {
@@ -149,7 +151,7 @@ io.on('connection', function(socket) {
     });
 
     socket.emit('turn change', {
-      turnOwner: game.turnOwner
+      turnOwner: game.turnQueue[game.turnIndex]
     });
 
     socket.emit('funds change', {
@@ -174,6 +176,10 @@ io.on('connection', function(socket) {
     });
 
     socket.on('spawner populate', function(data) {
+      if (game.turnQueue[game.turnIndex] !== player) {
+        return;
+      }
+
       socket.emit('spawner activate', {
         x: data.x, z: data.z
       });
@@ -183,6 +189,10 @@ io.on('connection', function(socket) {
     });
 
     socket.on('spawn unit', function(data) {
+      if (game.turnQueue[game.turnIndex] !== player) {
+        return;
+      }
+
       var newUnit = addUnit(game, data.x, data.z, data.unitType, player);
       io.to(game.id).emit('spawn unit', {
         unit: newUnit.id,
@@ -198,6 +208,10 @@ io.on('connection', function(socket) {
     });
 
     socket.on('attack unit', function(data) {
+      if (game.turnQueue[game.turnIndex] !== player) {
+        return;
+      }
+
       var attacker = game.units[data.attacker];
       var defender = game.units[data.defender];
 
@@ -244,6 +258,10 @@ io.on('connection', function(socket) {
     });
 
     socket.on('move unit', function(data) {
+      if (game.turnQueue[game.turnIndex] !== player) {
+        return;
+      }
+
       var unit = game.units[data.unit];
 
       if (unit.remainingMovement <= 0) {
@@ -264,6 +282,23 @@ io.on('connection', function(socket) {
           newZ: data.newZ
         });
       }
+    });
+
+    socket.on('end turn', function(data) {
+      if (game.turnQueue[game.turnIndex] !== player) {
+        return;
+      }
+
+      for (var unitIndex in game.units) {
+        var unit = game.units[unitIndex];
+        unit.attacks = unit.maxAttacks;
+        unit.remainingMovement = unit.maxMovement;
+      }
+
+      game.turnIndex = (game.turnIndex + 1) % game.turnQueue.length;
+      io.to(game.id).emit('turn change', {
+        turnOwner: game.turnQueue[game.turnIndex]
+      });
     });
   });
   socket.on('disconnect', function() {

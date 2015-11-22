@@ -53,6 +53,23 @@
   height: 100%;
 }
 
+#end-turn {
+  z-index: 3;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 250px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  text-align: center;
+  background-color: black;
+  transition: background-color .5s;
+}
+
+#end-turn:hover {
+  background-color: red;
+}
+
 .control-panel-element {
   padding-left: 10px;
 }

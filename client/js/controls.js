@@ -13,6 +13,8 @@ function onDocumentMouseDown(e) {
     toggleControlPanel(e);
   } else if (targ.id === "start-game") {
     handleGameStart();
+  } else if (targ.id === "end-turn") {
+    requestEndTurn();
   } else if (targ.className === "control-panel-element control-panel-unit-description") {
     requestUnitSpawn(targ.unitType);
   }
