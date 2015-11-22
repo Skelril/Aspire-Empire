@@ -10,7 +10,7 @@ function onDocumentMouseDown(e) {
   if (targ.tagName === "CANVAS") {
     handleGameContent(e);
   } else if (targ.id === "control-panel-toggle") {
-    toggleControlPanel();
+    toggleControlPanel(e);
   } else if (targ.className === "control-panel-element control-panel-unit-description") {
     requestUnitSpawn(targ.unitType);
   }
@@ -56,7 +56,9 @@ function handleGameContent(e) {
   }
 }
 
-function toggleControlPanel() {
+function toggleControlPanel(e) {
+  e.preventDefault();
+
   // Show/Hide the control panel
   var controlPanel = document.getElementById("control-panel");
   if (controlPanel.style.display === "none") {
