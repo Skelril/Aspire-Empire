@@ -116,7 +116,7 @@ function createGame(game, player) {
   return games[game];
 }
 
-function addUnit(game, posX, posZ, unitType, ownerID) {
+function addUnit(game, posX, posZ, unitType, ownerID, replinished) {
   var unitDefinition = game.unitDefinitions[unitType];
   var unitID = uuid.v1();
   return game.units[unitID] = {
@@ -129,9 +129,9 @@ function addUnit(game, posX, posZ, unitType, ownerID) {
     maxHealth: unitDefinition.health,
     hitPower: unitDefinition.hitPower,
     blockingPower: unitDefinition.blockingPower,
-    attacks: unitDefinition.attacks,
+    attacks: replinished ? unitDefinition.attacks : 0,
     maxAttacks: unitDefinition.attacks,
-    remainingMovement: unitDefinition.movement,
+    remainingMovement: replinished ? unitDefinition.movement : 0,
     maxMovement: unitDefinition.movement
   }
 }
@@ -169,7 +169,7 @@ io.on('connection', function(socket) {
       });
     }
 
-    var initialUnit = addUnit(game, 0, 1, "Green Cube", player);
+    var initialUnit = addUnit(game, 0, 1, "Green Cube", player, true);
 
     io.to(game.id).emit('spawn unit', {
       unit: initialUnit.id,
@@ -195,7 +195,7 @@ io.on('connection', function(socket) {
         return;
       }
 
-      var newUnit = addUnit(game, data.x, data.z, data.unitType, player);
+      var newUnit = addUnit(game, data.x, data.z, data.unitType, player, false);
       io.to(game.id).emit('spawn unit', {
         unit: newUnit.id,
         x: newUnit.x,
