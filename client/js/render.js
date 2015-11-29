@@ -2,6 +2,7 @@
 // Server Interface
 ////////////////////////////////////////////////////////////////////////////////
 
+var funds;
 var turnOwner;
 var winner = null;
 var gameName;
@@ -221,6 +222,7 @@ function loadMap(tileMap) {
 
 function updateFunds(newVal) {
   var coins = document.getElementById('coins');
+  funds = newVal;
   coins.innerHTML = newVal;
 }
 
@@ -294,7 +296,11 @@ function populateSpawnerList(unitDefinitions) {
   for (var def in unitDefinitions) {
     var unitDef = unitDefinitions[def];
     var node = document.createElement("DIV");
-    node.className = "control-panel-element control-panel-unit-description";
+    if (unitDef.cost <= funds) {
+      node.className = "control-panel-element control-panel-unit-description";
+    } else {
+      node.className = "control-panel-element control-panel-unit-unspawnable-description";
+    }
     node.unitType = unitDef.name;
     var unitName = document.createTextNode(unitDef.name);
     var unitCost = document.createTextNode("Cost: " + unitDef.cost);

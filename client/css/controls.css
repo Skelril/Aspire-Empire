@@ -95,3 +95,14 @@
 .control-panel-unit-description:hover {
   background-color: red;
 }
+
+.control-panel-unit-unspawnable-description {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: black;
+  transition: background-color .5s;
+}
+
+.control-panel-unit-unspawnable-description:hover {
+  background-color: #404040;
+}
