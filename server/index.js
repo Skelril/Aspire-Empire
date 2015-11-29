@@ -76,12 +76,32 @@ function requestMap() {
 
 var games = {};
 
+function loadRuntimeMap(game) {
+  var mapTemplate = game.map.template;
+  for (let tileDef of mapTemplate) {
+    loadTile(game.map.runtime, tileDef);
+  }
+}
+
+function loadTile(runtime, tileDef) {
+  if (!(tileDef.x in runtime)) {
+    runtime[tileDef.x] = {}
+  }
+  runtime[tileDef.x][tileDef.z] = {
+    type: tileDef.hasOwnProperty('type') ? tileDef.type : "default",
+    unit: null
+  };
+}
+
 function createGame(game) {
   if (!games.hasOwnProperty(game)) {
     var newGame = games[game] = {
       id: game,
       winner: null,
-      map: requestMap(),
+      map: {
+        runtime: {},
+        template: requestMap()
+      },
       players: [],
       units: {},
       unitDefinitions: {}
@@ -115,6 +135,8 @@ function createGame(game) {
       attacks: 100,
       movement: 10
     };
+
+    loadRuntimeMap(newGame);
 
     console.log('New game created: ' + game + '.');
 
@@ -153,6 +175,27 @@ function changeTurn(game) {
   var old = game.players.shift();
   game.players.push(old);
   return getTurnOwner(game);
+}
+
+function mapHasFreeTile(game, x, z) {
+  var runtime = game.map.runtime;
+  if (runtime.hasOwnProperty(x) && runtime[x].hasOwnProperty(z)) {
+    return runtime[x][z].unit === null;
+  }
+  return false;
+}
+
+function moveUnit(game, unit, newX, newZ) {
+  var runtime = game.map.runtime;
+  var x = unit.x;
+  var z = unit.z;
+
+  var oldUnit = runtime[x][z].unit;
+  runtime[x][z].unit = null;
+  runtime[newX][newZ].unit = oldUnit;
+
+  unit.x = newX;
+  unit.z = newZ;
 }
 
 function findWinner(game) {
@@ -194,7 +237,7 @@ function updateFunds(player, newFunds) {
 function addUnit(game, posX, posZ, unitType, owner, replinished) {
   var unitDefinition = game.unitDefinitions[unitType];
   var unitID = uuid.v1();
-  return game.units[unitID] = {
+  var unit = game.units[unitID] = {
     id: unitID,
     type: unitType,
     x: posX,
@@ -208,7 +251,9 @@ function addUnit(game, posX, posZ, unitType, owner, replinished) {
     maxAttacks: unitDefinition.attacks,
     remainingMovement: replinished ? unitDefinition.movement : 0,
     maxMovement: unitDefinition.movement
-  }
+  };
+  game.map.runtime[posX][posZ].unit = unit;
+  return unit;
 }
 
 io.on('connection', function(socket) {
@@ -226,7 +271,7 @@ io.on('connection', function(socket) {
     // Initial game setup
 
     socket.emit('map change', {
-      map: game.map
+      map: game.map.template
     });
 
     socket.emit('turn change', {
@@ -363,10 +408,13 @@ io.on('connection', function(socket) {
       var xDiff = Math.abs(unit.x - data.newX);
       var zDiff = Math.abs(unit.z - data.newZ)
       if ((xDiff === 1 && zDiff === 0) || (zDiff === 1 && xDiff === 0)) {
-        --unit.remainingMovement;
+        if (!mapHasFreeTile(game, data.newX, data.newZ)) {
+          return;
+        }
 
-        unit.x = data.newX;
-        unit.z = data.newZ;
+        moveUnit(game, unit, data.newX, data.newZ);
+
+        --unit.remainingMovement;
 
         io.to(game.id).emit('move unit', {
           unit: data.unit,
