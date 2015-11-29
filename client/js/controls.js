@@ -95,6 +95,7 @@ function handleEndTurn(e) {
 }
 
 function onKeyDown(e) {
+  e.preventDefault();
   var key = e.keyCode ? e.keyCode : e.which;
 
   switch (key) {
