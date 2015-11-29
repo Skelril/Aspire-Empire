@@ -185,6 +185,12 @@ function mapHasFreeTile(game, x, z) {
   return false;
 }
 
+function isAdjacent(xa, za, xb, zb) {
+  var xDiff = Math.abs(xa - xb);
+  var zDiff = Math.abs(za - zb);
+  return (xDiff === 1 && zDiff === 0) || (zDiff === 1 && xDiff === 0);
+}
+
 function moveUnit(game, unit, newX, newZ) {
   var runtime = game.map.runtime;
   var x = unit.x;
@@ -356,6 +362,10 @@ io.on('connection', function(socket) {
         return;
       }
 
+      if (!isAdjacent(attacker.x, attacker.z, defender.x, defender.z)) {
+        return;
+      }
+
       if (attacker.attacks <= 0) {
         return;
       }
@@ -407,7 +417,7 @@ io.on('connection', function(socket) {
 
       var xDiff = Math.abs(unit.x - data.newX);
       var zDiff = Math.abs(unit.z - data.newZ)
-      if ((xDiff === 1 && zDiff === 0) || (zDiff === 1 && xDiff === 0)) {
+      if (isAdjacent(unit.x, unit.z, data.newX, data.newZ)) {
         if (!mapHasFreeTile(game, data.newX, data.newZ)) {
           return;
         }
