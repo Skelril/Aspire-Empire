@@ -73,15 +73,15 @@ socket.on('spawner populate', function(data) {
 });
 
 socket.on('turn change', function(data) {
-  turnOwner = data.turnOwner;
+  turnOwner = data.turnOwner.id;
   updateTurnButton();
   deactiveSpawner();
   requestActiveUnitUpdate();
 });
 
 socket.on('game end', function(data) {
-  winner = data.winner;
-  displayWinner(data.winner);
+  winner = data.winner.id;
+  displayWinner(data.winner.id);
   updateTurnButton();
 });
 
@@ -297,6 +297,7 @@ function populateSpawnerList(unitDefinitions) {
     node.className = "control-panel-element control-panel-unit-description";
     node.unitType = unitDef.name;
     var unitName = document.createTextNode(unitDef.name);
+    var unitCost = document.createTextNode("Cost: " + unitDef.cost);
     var unitHealth = document.createTextNode("Health: " + unitDef.health);
     var unitHitPower = document.createTextNode("Strength: " + unitDef.hitPower);
     var unitAttacks = document.createTextNode("Attakcs: " + unitDef.attacks);
@@ -304,6 +305,8 @@ function populateSpawnerList(unitDefinitions) {
     var movement = document.createTextNode("Movement: " + unitDef.movement);
 
     node.appendChild(unitName);
+    node.appendChild(document.createElement("BR"));
+    node.appendChild(unitCost);
     node.appendChild(document.createElement("BR"));
     node.appendChild(unitHealth);
     node.appendChild(document.createElement("BR"));
@@ -328,7 +331,7 @@ function isActiveUnitSet() {
 }
 
 function isActiveUnitOwned() {
-  return isActiveUnitSet() && activeUnit.owner === cliPlayer;
+  return isActiveUnitSet() && activeUnit.owner.id === cliPlayer;
 }
 
 function setActiveUnit(uuid) {
@@ -369,7 +372,7 @@ function updateActiveUnit(unitProfile) {
     maxAttacks.innerHTML = unitProfile.maxAttacks;
     remainingMovement.innerHTML = unitProfile.remainingMovement;
     maxMovement.innerHTML = unitProfile.maxMovement;
-    ownerName.innerHTML = unitProfile.owner;
+    ownerName.innerHTML = unitProfile.owner.id;
 
     activeUnit.owner = unitProfile.owner;
 

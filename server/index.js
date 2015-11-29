@@ -76,14 +76,13 @@ function requestMap() {
 
 var games = {};
 
-function createGame(game, player) {
+function createGame(game) {
   if (!games.hasOwnProperty(game)) {
     var newGame = games[game] = {
       id: game,
       winner: null,
       map: requestMap(),
-      turnIndex: 0,
-      turnQueue: [],
+      players: [],
       units: {},
       unitDefinitions: {}
     }
@@ -91,6 +90,7 @@ function createGame(game, player) {
     // Define some units
     newGame.unitDefinitions["Death Stalker"] = {
       name: "Death Stalker",
+      cost: 10,
       health: 200,
       hitPower: 5,
       blockingPower: 5,
@@ -99,6 +99,7 @@ function createGame(game, player) {
     };
     newGame.unitDefinitions["Magician"] = {
       name: "Magician",
+      cost: 20,
       health: 45,
       hitPower: 33,
       blockingPower: 7,
@@ -107,6 +108,7 @@ function createGame(game, player) {
     };
     newGame.unitDefinitions["Green Cube"] = {
       name: "Green Cube",
+      cost: 7,
       health: 65,
       hitPower: 1,
       blockingPower: 15,
@@ -121,13 +123,36 @@ function createGame(game, player) {
   return games[game];
 }
 
+function addPlayer(game, player) {
+  game.players.push(player);
+}
+
+function createPlayer(playerName) {
+  return {
+    id: playerName,
+    funds: 100
+  };
+}
+
 function checkGame(game) {
   if (games.hasOwnProperty(game.id)) {
-    if (game.turnQueue.length === 0) {
+    if (game.players.length === 0) {
       delete games[game.id];
       console.log('Game destroyed: ' + game.id + '.');
+      return false;
     }
   }
+  return true;
+}
+
+function getTurnOwner(game) {
+  return game.players[0];
+}
+
+function changeTurn(game) {
+  var old = game.players.shift();
+  game.players.push(old);
+  return getTurnOwner(game);
 }
 
 function findWinner(game) {
@@ -152,13 +177,21 @@ function canMove(game, player) {
   if (game.winner !== null) {
     return false;
   }
-  if (game.turnQueue[game.turnIndex] !== player) {
+  if (game.players[0] !== player) {
     return false;
   }
   return true;
 }
 
-function addUnit(game, posX, posZ, unitType, ownerID, replinished) {
+function getNewFunds(game, player, unitType) {
+  return player.funds - game.unitDefinitions[unitType].cost;
+}
+
+function updateFunds(player, newFunds) {
+  player.funds = newFunds;
+}
+
+function addUnit(game, posX, posZ, unitType, owner, replinished) {
   var unitDefinition = game.unitDefinitions[unitType];
   var unitID = uuid.v1();
   return game.units[unitID] = {
@@ -166,7 +199,7 @@ function addUnit(game, posX, posZ, unitType, ownerID, replinished) {
     type: unitType,
     x: posX,
     z: posZ,
-    owner: ownerID,
+    owner: owner,
     health: unitDefinition.health,
     maxHealth: unitDefinition.health,
     hitPower: unitDefinition.hitPower,
@@ -183,23 +216,25 @@ io.on('connection', function(socket) {
   var player;
   var game;
   socket.on('join game', function(data) {
-    player = data.player;
-    game = createGame(data.game, player);
+    player = createPlayer(data.player);
+    game = createGame(data.game);
 
     socket.join(game.id);
-    game.turnQueue.push(player);
-    console.log(player + ' has joined game ' + game.id + '.');
+    addPlayer(game, player);
+    console.log(player.id + ' has joined game ' + game.id + '.');
+
+    // Initial game setup
 
     socket.emit('map change', {
       map: game.map
     });
 
     socket.emit('turn change', {
-      turnOwner: game.turnQueue[game.turnIndex]
+      turnOwner: getTurnOwner(game)
     });
 
     socket.emit('funds change', {
-      newFunds: 100
+      newFunds: player.funds
     });
 
     for (var unitIndex in game.units) {
@@ -219,6 +254,8 @@ io.on('connection', function(socket) {
       z: initialUnit.z
     });
 
+    // Game listeners
+
     socket.on('spawner populate', function(data) {
       if (!canMove(game, player)) {
         return;
@@ -236,6 +273,17 @@ io.on('connection', function(socket) {
       if (!canMove(game, player)) {
         return;
       }
+
+      var newFunds = getNewFunds(game, player, data.unitType);
+
+      if (newFunds < 0) {
+        return;
+      }
+
+      updateFunds(player, newFunds);
+      socket.emit('funds change', {
+        newFunds: player.funds
+      });
 
       var newUnit = addUnit(game, data.x, data.z, data.unitType, player, false);
       io.to(game.id).emit('spawn unit', {
@@ -347,15 +395,15 @@ io.on('connection', function(socket) {
         return;
       }
 
-      game.turnIndex = (game.turnIndex + 1) % game.turnQueue.length;
+      changeTurn(game);
       io.to(game.id).emit('turn change', {
-        turnOwner: game.turnQueue[game.turnIndex]
+        turnOwner: getTurnOwner(game)
       });
     });
   });
   socket.on('disconnect', function() {
     if (player != undefined) {
-      console.log(player + ' disconnected.');
+      console.log(player.id + ' disconnected.');
     } else {
       console.log('User disconnected.');
     }
@@ -372,17 +420,17 @@ io.on('connection', function(socket) {
         }
       }
 
-      var wasUsersTurn = game.turnQueue[game.turnIndex] === player;
-      game.turnQueue = game.turnQueue.filter(function(el) {
-        return el !== player;
-      });
-
+      var wasUsersTurn = getTurnOwner(game) === player;
       if (wasUsersTurn) {
-        game.turnIndex = game.turnIndex % game.turnQueue.length;
+        changeTurn(game);
         io.to(game.id).emit('turn change', {
-          turnOwner: game.turnQueue[game.turnIndex]
+          turnOwner: getTurnOwner(game)
         });
       }
+
+      game.players = game.players.filter(function(el) {
+        return el.id !== player.id;
+      });
 
       checkGame(game);
     }
