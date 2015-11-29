@@ -302,7 +302,7 @@ io.on('connection', function(socket) {
     // Game listeners
 
     socket.on('spawner populate', function(data) {
-      if (!canMove(game, player)) {
+      if (!canMove(game, player) || !mapHasFreeTile(game, data.x, data.z)) {
         return;
       }
 
