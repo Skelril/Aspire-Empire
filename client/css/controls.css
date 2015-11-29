@@ -53,6 +53,17 @@
   height: 100%;
 }
 
+#winner-notice {
+  display: none;
+  z-index: 10;
+  color: black;
+  background-color: gold;
+  position: absolute;
+  width: 100%;
+  font-size: 20px;
+  text-align: center;
+}
+
 #end-turn {
   z-index: 3;
   position: absolute;

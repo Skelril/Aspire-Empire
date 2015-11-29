@@ -1,3 +1,5 @@
+"use strict";
+
 var uuid = require('node-uuid');
 
 var express = require('express');
@@ -78,6 +80,7 @@ function createGame(game, player) {
   if (!games.hasOwnProperty(game)) {
     var newGame = games[game] = {
       id: game,
+      winner: null,
       map: requestMap(),
       turnIndex: 0,
       turnQueue: [],
@@ -111,9 +114,48 @@ function createGame(game, player) {
       movement: 10
     };
 
+    console.log('New game created: ' + game + '.');
+
     return newGame;
   }
   return games[game];
+}
+
+function checkGame(game) {
+  if (games.hasOwnProperty(game.id)) {
+    if (game.turnQueue.length === 0) {
+      delete games[game.id];
+      console.log('Game destroyed: ' + game.id + '.');
+    }
+  }
+}
+
+function findWinner(game) {
+  if (game.winner !== null) {
+    return game.winner;
+  }
+
+  var playerSet = new Set();
+  for (var unitIndex in game.units) {
+    var unit = game.units[unitIndex];
+    playerSet.add(unit.owner);
+  }
+
+  if (playerSet.size === 1) {
+    game.winner = playerSet[Symbol.iterator]().next().value;
+  }
+
+  return game.winner;
+}
+
+function canMove(game, player) {
+  if (game.winner !== null) {
+    return false;
+  }
+  if (game.turnQueue[game.turnIndex] !== player) {
+    return false;
+  }
+  return true;
 }
 
 function addUnit(game, posX, posZ, unitType, ownerID, replinished) {
@@ -146,7 +188,7 @@ io.on('connection', function(socket) {
 
     socket.join(game.id);
     game.turnQueue.push(player);
-    console.log(player + ' has joined game ' + game.id);
+    console.log(player + ' has joined game ' + game.id + '.');
 
     socket.emit('map change', {
       map: game.map
@@ -178,7 +220,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('spawner populate', function(data) {
-      if (game.turnQueue[game.turnIndex] !== player) {
+      if (!canMove(game, player)) {
         return;
       }
 
@@ -191,7 +233,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('spawn unit', function(data) {
-      if (game.turnQueue[game.turnIndex] !== player) {
+      if (!canMove(game, player)) {
         return;
       }
 
@@ -210,7 +252,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('attack unit', function(data) {
-      if (game.turnQueue[game.turnIndex] !== player) {
+      if (!canMove(game, player)) {
         return;
       }
 
@@ -260,7 +302,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('move unit', function(data) {
-      if (game.turnQueue[game.turnIndex] !== player) {
+      if (!canMove(game, player)) {
         return;
       }
 
@@ -287,7 +329,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('end turn', function(data) {
-      if (game.turnQueue[game.turnIndex] !== player) {
+      if (!canMove(game, player)) {
         return;
       }
 
@@ -297,6 +339,14 @@ io.on('connection', function(socket) {
         unit.remainingMovement = unit.maxMovement;
       }
 
+      var winningPlayer = findWinner(game);
+      if (winningPlayer !== null) {
+        io.to(game.id).emit('game end', {
+          winner: winningPlayer
+        });
+        return;
+      }
+
       game.turnIndex = (game.turnIndex + 1) % game.turnQueue.length;
       io.to(game.id).emit('turn change', {
         turnOwner: game.turnQueue[game.turnIndex]
@@ -304,8 +354,14 @@ io.on('connection', function(socket) {
     });
   });
   socket.on('disconnect', function() {
+    if (player != undefined) {
+      console.log(player + ' disconnected.');
+    } else {
+      console.log('User disconnected.');
+    }
+
     if (game != undefined && player != undefined) {
-      for (unitIndex in game.units) {
+      for (var unitIndex in game.units) {
         var unit = game.units[unitIndex];
         var condition = unit.owner === player;
         if (condition) {
@@ -327,12 +383,8 @@ io.on('connection', function(socket) {
           turnOwner: game.turnQueue[game.turnIndex]
         });
       }
-    }
 
-    if (player != undefined) {
-      console.log(player + ' disconnected.');
-    } else {
-      console.log('User disconnected.');
+      checkGame(game);
     }
   });
 });

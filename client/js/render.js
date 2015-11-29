@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 var turnOwner;
+var winner = null;
 var gameName;
 var cliPlayer;
 
@@ -78,6 +79,12 @@ socket.on('turn change', function(data) {
   requestActiveUnitUpdate();
 });
 
+socket.on('game end', function(data) {
+  winner = data.winner;
+  displayWinner(data.winner);
+  updateTurnButton();
+});
+
 socket.on('move unit', function(data) {
   moveUnit(data.unit, data.newX, data.newZ);
 });
@@ -87,7 +94,7 @@ socket.on('active unit update', function(data) {
 });
 
 function isPlayersTurn() {
-  return turnOwner === cliPlayer;
+  return winner === null && turnOwner === cliPlayer;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -477,6 +484,11 @@ function hitSplat(uuid, amt) {
   hitSplats.push(hitSplat);
 
   scene.add(hitSplat);
+}
+
+function displayWinner(winner) {
+  document.getElementById("winner-notice").style.display = "initial";
+  document.getElementById("winner-name").innerHTML = winner;
 }
 
 // Lighting
