@@ -152,6 +152,7 @@ function addPlayer(game, player) {
 function createPlayer(playerName) {
   return {
     id: playerName,
+    baseIncome: 7,
     funds: 100
   };
 }
@@ -174,7 +175,9 @@ function getTurnOwner(game) {
 function changeTurn(game) {
   var old = game.players.shift();
   game.players.push(old);
-  return getTurnOwner(game);
+  var newTurnOwner = getTurnOwner(game);
+  newTurnOwner.funds += newTurnOwner.baseIncome;
+  return newTurnOwner;
 }
 
 function mapHasFreeTile(game, x, z) {
@@ -286,6 +289,10 @@ io.on('connection', function(socket) {
 
     socket.emit('funds change', {
       newFunds: player.funds
+    });
+
+    socket.emit('income change', {
+      newIncome: player.baseIncome
     });
 
     for (var unitIndex in game.units) {
@@ -456,6 +463,12 @@ io.on('connection', function(socket) {
       changeTurn(game);
       io.to(game.id).emit('turn change', {
         turnOwner: getTurnOwner(game)
+      });
+    });
+
+    socket.on('funds update', function(data) {
+      socket.emit('funds change', {
+        newFunds: player.funds
       });
     });
   });

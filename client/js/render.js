@@ -26,6 +26,10 @@ function requestMove(x, z) {
   }
 }
 
+function requestFundsUpdate() {
+  socket.emit('funds update', {});
+}
+
 function resquestSpawnerFocus(xPos, zPos) {
   socket.emit('spawner populate', {x: xPos, z: zPos});
 }
@@ -53,6 +57,10 @@ socket.on('funds change', function(data) {
   updateFunds(data.newFunds);
 });
 
+socket.on('income change', function(data) {
+  updateIncome(data.newIncome);
+});
+
 socket.on('map change', function(data) {
   loadMap(data.map);
 });
@@ -75,6 +83,10 @@ socket.on('spawner populate', function(data) {
 
 socket.on('turn change', function(data) {
   turnOwner = data.turnOwner.id;
+  if (isPlayersTurn()) {
+    requestFundsUpdate();
+  }
+
   updateTurnButton();
   deactiveSpawner();
   requestActiveUnitUpdate();
@@ -221,9 +233,18 @@ function loadMap(tileMap) {
 // Empire details
 
 function updateFunds(newVal) {
-  var coins = document.getElementById('coins');
+  var coins = document.getElementById("coins");
   funds = newVal;
   coins.innerHTML = newVal;
+}
+
+function updateIncome(newVal) {
+  var income = document.getElementById("income");
+  if (newVal > 0) {
+    income.innerHTML = "+" + newVal;
+  } else {
+    income.innerHTML = newVal;
+  }
 }
 
 function updateTurnButton() {
