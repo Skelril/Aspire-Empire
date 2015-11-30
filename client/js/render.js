@@ -263,10 +263,53 @@ var units = {}
 var activeSpawner = null;
 var activeUnit = null;
 
+// Rendering & Movement constants
+
+var MOVEMENT_PRECISION = 1;
+var MOVEMENT_UNIT = 0.1;
+
+function _constructMoveTo(x, y, z) {
+  return function(moveable) {
+    var updated = false;
+    if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
+      if (moveable.position.x < x) {
+        moveable.position.x += MOVEMENT_UNIT;
+      } else {
+        moveable.position.x -= MOVEMENT_UNIT;
+      }
+      updated = true;
+    }
+    if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
+      if (moveable.position.y < y) {
+        moveable.position.y += MOVEMENT_UNIT;
+      } else {
+        moveable.position.y -= MOVEMENT_UNIT;
+      }
+      updated = true;
+    }
+    if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
+      if (moveable.position.z < z) {
+        moveable.position.z += MOVEMENT_UNIT;
+      } else {
+        moveable.position.z -= MOVEMENT_UNIT;
+      }
+      updated = true;
+    }
+    return !updated;
+  };
+}
+
+function _queueAnimation(animatable, funct) {
+  if (!animatable.hasOwnProperty("animationQueue")) {
+    animatable.animationQueue = [];
+  }
+  animatable.animationQueue.push(funct);
+}
+
 function _initUnitAt(unit, x, z) {
   var y = map.tiles[x][z].height + unit.offSet;
   unit.position.set(x + 0.5, y + 1, z + 0.5);
-  unit.targPos = new THREE.Vector3(x + 0.5, y, z + 0.5);
+  _queueAnimation(unit, _constructMoveTo(x + 0.5, y, z + .05));
 }
 
 function _handleModelChildren(unit) {
@@ -462,7 +505,7 @@ function updateActiveUnit(unitProfile) {
 
 function moveUnit(uuid, x, z) {
   var unit = units[uuid];
-  unit.targPos.set(x + 0.5, map.tiles[x][z].height + unit.offSet, z + 0.5);
+  _queueAnimation(unit, _constructMoveTo(x + 0.5, map.tiles[x][z].height + unit.offSet, z + 0.5));
   if (isActiveUnit(uuid)) {
     requestActiveUnitUpdate();
   }
@@ -580,10 +623,6 @@ var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.position.set(0, 1, 0);
 scene.add( directionalLight );
 
-// Rendering & Movement constants
-var MOVEMENT_PRECISION = 1;
-var MOVEMENT_UNIT = 0.1;
-
 function processMovement(moveable) {
   if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== moveable.targPos.x.toFixed(MOVEMENT_PRECISION)) {
     if (moveable.position.x < moveable.targPos.x) {
@@ -667,11 +706,21 @@ function render() {
   setTimeout(function() {
     requestAnimationFrame(render);
 
-    scene.traverse(function(moveable) {
-        if (!moveable.hasOwnProperty("targPos")) {
-          return;
+    scene.traverse(function(sceneEntry) {
+        // Unit movement/combat
+        if (sceneEntry.hasOwnProperty("animationQueue")) {
+          if (sceneEntry.animationQueue.length > 0) {
+            var endOfAnimation = sceneEntry.animationQueue[0](sceneEntry);
+            if (endOfAnimation) {
+              sceneEntry.animationQueue.shift()(sceneEntry);
+            }
+          }
         }
-        processMovement(moveable);
+
+        // Camera Support
+        if (sceneEntry.hasOwnProperty("targPos")) {
+          processMovement(sceneEntry);
+        }
       }
     );
 
