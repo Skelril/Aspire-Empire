@@ -46,6 +46,8 @@ function handleGameContent(e) {
           }
           setActiveUnit(null);
           break;
+        case "unit_piece":
+          discoveredObject = discoveredObject.parent;
         case "unit":
           if (isActiveUnitOwned() && isPlayersTurn()) {
             requestAttack(discoveredObject.uuid);
@@ -95,6 +97,10 @@ function handleEndTurn(e) {
 }
 
 function onKeyDown(e) {
+  if (document.getElementById('start-screen').style.display !== "none") {
+    return;
+  }
+
   e.preventDefault();
   var key = e.keyCode ? e.keyCode : e.which;
 

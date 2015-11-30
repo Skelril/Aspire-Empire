@@ -117,6 +117,7 @@ function isPlayersTurn() {
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 var loader = new THREE.TextureLoader();
+var modelLoader = new THREE.ObjectLoader();
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -263,26 +264,76 @@ var activeSpawner = null;
 var activeUnit = null;
 
 function _initUnitAt(unit, x, z) {
-  var y = map.tiles[x][z].height + (unit.height / 2);
-  unit.position.set(x + 0.5, y, z + 0.5);
+  var y = map.tiles[x][z].height + unit.offSet;
+  unit.position.set(x + 0.5, y + 1, z + 0.5);
   unit.targPos = new THREE.Vector3(x + 0.5, y, z + 0.5);
 }
 
-function addUnit(uuid, x, z) {
-  var geometry = new THREE.BoxGeometry(.5, .5, .5);
-  var material = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+function _handleModelChildren(unit) {
+  for (var child of unit.children) {
+    child.aspire_type = "unit_piece";
+    clickable.push(child);
+  }
+}
 
-  var unit = new THREE.Mesh( geometry, material );
+function addUnit(unit, x, z) {
+  var uuid = unit.id;
+  var type = unit.type;
+
+  // TODO This is AWFUL code
+  var bodyMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  var headMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  var legMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  var armMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+
+  if (type === "Death Stalker") {
+    var bodyMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var headMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var legMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var armMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  } else if (type === "Magician") {
+    var bodyMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var headMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var legMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var armMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  }
+
+  var unit = new THREE.Object3D();
+
+  var body = new THREE.Mesh(new THREE.BoxGeometry(.2, .2, .1), bodyMat);
+  body.position.set(0, .27, 0);
+  unit.add(body);
+
+  var head = new THREE.Mesh(new THREE.BoxGeometry(.1, .1, .1), headMat);
+  head.position.set(0, .41, 0);
+  unit.add(head);
+
+  var leftArm = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), armMat);
+  leftArm.position.set(.15, .28, 0);
+  unit.add(leftArm);
+
+  var rightArm = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), armMat);
+  rightArm.position.set(-.15, .28, 0);
+  unit.add(rightArm);
+
+  var leftLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
+  leftLeg.position.set(-.05, .085, 0);
+  unit.add(leftLeg);
+
+  var rightLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
+  rightLeg.position.set(.05, .085, 0);
+  unit.add(rightLeg);
+
   unit.aspire_type = "unit";
   unit.uuid = uuid;
-  unit.height = geometry.parameters.height;
+  unit.offSet = 0;
+  unit.height = 1;
   _initUnitAt(unit, x, z);
 
   units[uuid] = unit;
 
+  _handleModelChildren(unit);
   scene.add(unit);
-
-  clickable.push(unit);
 
   return unit;
 }
@@ -411,7 +462,7 @@ function updateActiveUnit(unitProfile) {
 
 function moveUnit(uuid, x, z) {
   var unit = units[uuid];
-  unit.targPos.set(x + 0.5, map.tiles[x][z].height + (unit.height / 2), z + 0.5);
+  unit.targPos.set(x + 0.5, map.tiles[x][z].height + unit.offSet, z + 0.5);
   if (isActiveUnit(uuid)) {
     requestActiveUnitUpdate();
   }
@@ -492,7 +543,7 @@ function hitSplat(uuid, amt) {
 
   var hitSplat = new THREE.Sprite(material);
 
-  var yPos = unit.position.y;
+  var yPos = unit.position.y + ((activeUnit.height - activeUnit.offSet) / 2);
   var updated;
   do {
     updated = false;
@@ -563,7 +614,7 @@ function _updateFocusRings() {
   var unitOfChange = 1.0 / focusRings.length;
   for (var ring in focusRings) {
     var focusRing = focusRings[ring];
-    focusRing.position.set(activeUnit.position.x, activeUnit.position.y, activeUnit.position.z);
+    focusRing.position.set(activeUnit.position.x, activeUnit.position.y + ((activeUnit.height - activeUnit.offSet) / 2), activeUnit.position.z);
     if ((Number(ring) + 1) % 2 === 0) {
       focusRing.rotateX(.1);
     } else {

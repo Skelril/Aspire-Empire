@@ -298,7 +298,7 @@ io.on('connection', function(socket) {
     for (var unitIndex in game.units) {
       var unit = game.units[unitIndex];
       socket.emit('spawn unit', {
-        unit: unit.id,
+        unit: unit,
         x: unit.x,
         z: unit.z
       });
@@ -307,7 +307,7 @@ io.on('connection', function(socket) {
     var initialUnit = addUnit(game, 0, 1, "Green Cube", player, true);
 
     io.to(game.id).emit('spawn unit', {
-      unit: initialUnit.id,
+      unit: initialUnit,
       x: initialUnit.x,
       z: initialUnit.z
     });
@@ -345,7 +345,7 @@ io.on('connection', function(socket) {
 
       var newUnit = addUnit(game, data.x, data.z, data.unitType, player, false);
       io.to(game.id).emit('spawn unit', {
-        unit: newUnit.id,
+        unit: newUnit,
         x: newUnit.x,
         z: newUnit.z
       });
