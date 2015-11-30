@@ -271,29 +271,52 @@ var MOVEMENT_UNIT = 0.1;
 function _constructMoveTo(x, y, z) {
   return function(moveable) {
     var updated = false;
-    if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
-      if (moveable.position.x < x) {
-        moveable.position.x += MOVEMENT_UNIT;
-      } else {
-        moveable.position.x -= MOVEMENT_UNIT;
-      }
+
+    var angle;
+    var curAngle = moveable.rotation.y;
+
+    if (x.toFixed(0) > moveable.position.x.toFixed(0)) {
+      angle = -90 * Math.PI / 180;
+    } else if (x.toFixed(0) < moveable.position.x.toFixed(0)) {
+      angle = 90 * Math.PI / 180;
+    }
+
+    if (z.toFixed(0) > moveable.position.z.toFixed(0)) {
+      angle = 180 * Math.PI / 180;
+    } else if (z.toFixed(0) < moveable.position.z.toFixed(0)) {
+      angle = -180 * Math.PI / 180;
+    }
+
+    if (angle !== undefined && curAngle !== angle) {
+      moveable.rotation.y = angle;
       updated = true;
     }
-    if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
-      if (moveable.position.y < y) {
-        moveable.position.y += MOVEMENT_UNIT;
-      } else {
-        moveable.position.y -= MOVEMENT_UNIT;
+
+    if (!updated) {
+      if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
+        if (moveable.position.x < x) {
+          moveable.position.x += MOVEMENT_UNIT;
+        } else {
+          moveable.position.x -= MOVEMENT_UNIT;
+        }
+        updated = true;
       }
-      updated = true;
-    }
-    if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
-      if (moveable.position.z < z) {
-        moveable.position.z += MOVEMENT_UNIT;
-      } else {
-        moveable.position.z -= MOVEMENT_UNIT;
+      if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
+        if (moveable.position.y < y) {
+          moveable.position.y += MOVEMENT_UNIT;
+        } else {
+          moveable.position.y -= MOVEMENT_UNIT;
+        }
+        updated = true;
       }
-      updated = true;
+      if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
+        if (moveable.position.z < z) {
+          moveable.position.z += MOVEMENT_UNIT;
+        } else {
+          moveable.position.z -= MOVEMENT_UNIT;
+        }
+        updated = true;
+      }
     }
     return !updated;
   };
@@ -309,7 +332,7 @@ function _queueAnimation(animatable, funct) {
 function _initUnitAt(unit, x, z) {
   var y = map.tiles[x][z].height + unit.offSet;
   unit.position.set(x + 0.5, y + 1, z + 0.5);
-  _queueAnimation(unit, _constructMoveTo(x + 0.5, y, z + .05));
+  _queueAnimation(unit, _constructMoveTo(x + 0.5, y, z + .5));
 }
 
 function _handleModelChildren(unit) {
