@@ -133,7 +133,7 @@ function createGame(game) {
       hitPower: 1,
       blockingPower: 15,
       attacks: 100,
-      movement: 10
+      movement: 1000
     };
 
     loadRuntimeMap(newGame);
@@ -382,6 +382,10 @@ io.on('connection', function(socket) {
       var damageAmt = Math.max(0, attacker.hitPower - defender.blockingPower);
       damageAmt = Math.min(defender.health, damageAmt);
       defender.health -= damageAmt;
+      io.to(game.id).emit('attack unit', {
+        attacker: attacker,
+        defender: defender
+      });
       io.to(game.id).emit('hitsplat', {
         unit: defender.id,
         damage: damageAmt
@@ -398,6 +402,10 @@ io.on('connection', function(socket) {
       damageAmt = Math.max(0, defender.hitPower - attacker.blockingPower);
       damageAmt = Math.min(attacker.health, damageAmt);
       attacker.health -= damageAmt;
+      io.to(game.id).emit('attack unit', {
+        attacker: defender,
+        defender: attacker
+      });
       io.to(game.id).emit('hitsplat', {
         unit: attacker.id,
         damage: damageAmt

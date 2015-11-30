@@ -53,6 +53,10 @@ socket.on('hitsplat', function(data) {
   hitSplat(data.unit, data.damage);
 });
 
+socket.on('attack unit', function(data) {
+  _displayAttack(data.attacker, data.defender);
+});
+
 socket.on('funds change', function(data) {
   updateFunds(data.newFunds);
 });
@@ -272,6 +276,39 @@ function _constructMoveTo(x, y, z) {
   return function(moveable) {
     var updated = false;
 
+    if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
+      if (moveable.position.x < x) {
+        moveable.position.x += MOVEMENT_UNIT;
+      } else {
+        moveable.position.x -= MOVEMENT_UNIT;
+      }
+      updated = true;
+    }
+    if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
+      if (moveable.position.y < y) {
+        moveable.position.y += MOVEMENT_UNIT;
+      } else {
+        moveable.position.y -= MOVEMENT_UNIT;
+      }
+      updated = true;
+    }
+    if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
+      if (moveable.position.z < z) {
+        moveable.position.z += MOVEMENT_UNIT;
+      } else {
+        moveable.position.z -= MOVEMENT_UNIT;
+      }
+      updated = true;
+    }
+
+    return !updated;
+  };
+}
+
+function _constructRotateToFace(x, z) {
+  return function(moveable) {
+    var updated = false;
+
     var angle;
     var curAngle = moveable.rotation.y;
 
@@ -288,35 +325,18 @@ function _constructMoveTo(x, y, z) {
     }
 
     if (angle !== undefined && curAngle !== angle) {
-      moveable.rotation.y = angle;
+      if (moveable.rotation.y > angle) {
+        moveable.rotation.y -= 20 * Math.PI / 180;
+        if (moveable.rotation.y < angle) {
+          moveable.rotation.y = angle;
+        }
+      } else {
+        moveable.rotation.y += 20 * Math.PI / 180;
+        if (moveable.rotation.y > angle) {
+          moveable.rotation.y = angle;
+        }
+      }
       updated = true;
-    }
-
-    if (!updated) {
-      if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
-        if (moveable.position.x < x) {
-          moveable.position.x += MOVEMENT_UNIT;
-        } else {
-          moveable.position.x -= MOVEMENT_UNIT;
-        }
-        updated = true;
-      }
-      if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
-        if (moveable.position.y < y) {
-          moveable.position.y += MOVEMENT_UNIT;
-        } else {
-          moveable.position.y -= MOVEMENT_UNIT;
-        }
-        updated = true;
-      }
-      if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
-        if (moveable.position.z < z) {
-          moveable.position.z += MOVEMENT_UNIT;
-        } else {
-          moveable.position.z -= MOVEMENT_UNIT;
-        }
-        updated = true;
-      }
     }
     return !updated;
   };
@@ -402,6 +422,14 @@ function addUnit(unit, x, z) {
   scene.add(unit);
 
   return unit;
+}
+
+function _displayAttack(serverAttacker, serverDefender) {
+  var attacker = units[serverAttacker.id];
+  var defender = units[serverDefender.id];
+
+  _queueAnimation(attacker, _constructRotateToFace(defender.position.x, defender.position.z));
+  _queueAnimation(defender, _constructRotateToFace(attacker.position.x, attacker.position.z));
 }
 
 function activateSpawner(x, z) {
@@ -528,6 +556,7 @@ function updateActiveUnit(unitProfile) {
 
 function moveUnit(uuid, x, z) {
   var unit = units[uuid];
+  _queueAnimation(unit, _constructRotateToFace(x + .5, z + .5));
   _queueAnimation(unit, _constructMoveTo(x + 0.5, map.tiles[x][z].height + unit.offSet, z + 0.5));
   if (isActiveUnit(uuid)) {
     requestActiveUnitUpdate();
