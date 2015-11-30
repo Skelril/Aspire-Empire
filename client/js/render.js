@@ -335,15 +335,15 @@ function _constructRotateToFace(x, z) {
     var angle;
     var curAngle = moveable.rotation.y;
 
-    if (x.toFixed(0) > moveable.position.x.toFixed(0)) {
+    if (Math.floor(x) > Math.floor(moveable.position.x)) {
       angle = -90 * Math.PI / 180;
-    } else if (x.toFixed(0) < moveable.position.x.toFixed(0)) {
+    } else if (Math.floor(x) < Math.floor(moveable.position.x)) {
       angle = 90 * Math.PI / 180;
     }
 
-    if (z.toFixed(0) > moveable.position.z.toFixed(0)) {
+    if (Math.floor(z) > Math.floor(moveable.position.z)) {
       angle = 180 * Math.PI / 180;
-    } else if (z.toFixed(0) < moveable.position.z.toFixed(0)) {
+    } else if (Math.floor(z) < Math.floor(moveable.position.z)) {
       angle = -180 * Math.PI / 180;
     }
 
@@ -458,7 +458,7 @@ function addUnit(unit, x, z) {
   unit.aspire_type = "unit";
   unit.uuid = uuid;
   unit.offSet = 0;
-  unit.height = 1;
+  unit.height = .51;
   _initUnitAt(unit, x, z);
 
   units[uuid] = unit;
@@ -603,7 +603,7 @@ function updateActiveUnit(unitProfile) {
 
 function moveUnit(uuid, x, z) {
   var unit = units[uuid];
-  _queueAnimation(unit, _constructRotateToFace(x + .5, z + .5));
+  _queueAnimation(unit, _constructRotateToFace(x, z));
   _queueAnimation(unit, _constructMoveTo(x + 0.5, map.tiles[x][z].height + unit.offSet, z + 0.5));
   if (isActiveUnit(uuid)) {
     requestActiveUnitUpdate();
