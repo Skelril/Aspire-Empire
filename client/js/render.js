@@ -366,6 +366,21 @@ function _constructRotateToFace(x, z) {
   };
 }
 
+function _constructAttackAnimation() {
+  return function(unit) {
+    var updated = false;
+    if (hitSplats.length > 0) {
+      updated = true;
+      unit.leftArm.rotation.x -= 10 * Math.PI / 180;
+      unit.rightArm.rotation.x += 10 * Math.PI / 180;
+    } else {
+      unit.leftArm.rotation.x = 0;
+      unit.rightArm.rotation.x = 0;
+    }
+    return !updated;
+  };
+}
+
 function _queueAnimation(animatable, funct) {
   if (!animatable.hasOwnProperty("animationQueue")) {
     animatable.animationQueue = [];
@@ -420,10 +435,12 @@ function addUnit(unit, x, z) {
 
   var leftArm = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), armMat);
   leftArm.position.set(.15, .28, 0);
+  unit.leftArm = leftArm;
   unit.add(leftArm);
 
   var rightArm = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), armMat);
   rightArm.position.set(-.15, .28, 0);
+  unit.rightArm = rightArm;
   unit.add(rightArm);
 
   var leftLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
@@ -457,7 +474,9 @@ function _displayAttack(serverAttacker, serverDefender) {
   var defender = units[serverDefender.id];
 
   _queueAnimation(attacker, _constructRotateToFace(defender.position.x, defender.position.z));
+  _queueAnimation(attacker, _constructAttackAnimation());
   _queueAnimation(defender, _constructRotateToFace(attacker.position.x, attacker.position.z));
+  _queueAnimation(defender, _constructAttackAnimation());
 }
 
 function activateSpawner(x, z) {
@@ -666,7 +685,7 @@ function hitSplat(uuid, amt) {
 
   var hitSplat = new THREE.Sprite(material);
 
-  var yPos = unit.position.y + ((activeUnit.height - activeUnit.offSet) / 2);
+  var yPos = unit.position.y + ((unit.height - unit.offSet) / 2);
   var updated;
   do {
     updated = false;
@@ -772,13 +791,17 @@ function drawFocusRing() {
 }
 
 function fadeHitSplats() {
-  for (splat in hitSplats) {
-    var hitSplat = hitSplats[splat];
+  var toRemove = [];
+  for (var hitSplat of hitSplats) {
     hitSplat.scale.set(hitSplat.scale.x * 0.9, hitSplat.scale.y * 0.9, hitSplat.scale.z * 0.9);
     if (hitSplat.scale.x < .34) {
       scene.remove(hitSplat);
-      delete hitSplats[splat];
+      toRemove.push(hitSplat);
     }
+  }
+
+  for (var splat of toRemove) {
+    hitSplats.splice(hitSplats.indexOf(splat), 1);
   }
 }
 
@@ -789,11 +812,12 @@ function render() {
     scene.traverse(function(sceneEntry) {
         // Unit movement/combat
         if (sceneEntry.hasOwnProperty("animationQueue")) {
-          if (sceneEntry.animationQueue.length > 0) {
+          while (sceneEntry.animationQueue.length > 0) {
             var endOfAnimation = sceneEntry.animationQueue[0](sceneEntry);
-            if (endOfAnimation) {
-              sceneEntry.animationQueue.shift()(sceneEntry);
+            if (!endOfAnimation) {
+              break;
             }
+            sceneEntry.animationQueue.shift();
           }
         }
 
