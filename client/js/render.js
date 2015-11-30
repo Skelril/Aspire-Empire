@@ -274,7 +274,9 @@ var MOVEMENT_UNIT = 0.1;
 
 function _constructMoveTo(x, y, z) {
   return function(moveable) {
-    var updated = false;
+    var updatedX = false;
+    var updatedY = false;
+    var updatedZ = false;
 
     if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
       if (moveable.position.x < x) {
@@ -282,7 +284,7 @@ function _constructMoveTo(x, y, z) {
       } else {
         moveable.position.x -= MOVEMENT_UNIT;
       }
-      updated = true;
+      updatedX = true;
     }
     if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
       if (moveable.position.y < y) {
@@ -290,7 +292,7 @@ function _constructMoveTo(x, y, z) {
       } else {
         moveable.position.y -= MOVEMENT_UNIT;
       }
-      updated = true;
+      updatedY = true;
     }
     if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
       if (moveable.position.z < z) {
@@ -298,10 +300,32 @@ function _constructMoveTo(x, y, z) {
       } else {
         moveable.position.z -= MOVEMENT_UNIT;
       }
-      updated = true;
+      updatedZ = true;
     }
 
-    return !updated;
+    // Handle
+    var nothingUpdated = !(updatedX || updatedY || updatedZ);
+
+    if (moveable.hasOwnProperty("legClicks")) {
+      var movementAxis = updatedX ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 0, 1);
+
+      // Reset robot
+      if (nothingUpdated) {
+          moveable.leftLeg.rotation.x = 0;
+          moveable.rightLeg.rotation.x = 0;
+      } else {
+        if (moveable.legClicks < 10) {
+          moveable.leftLeg.rotation.x = moveable.legClicks * -Math.PI / 360;
+          moveable.rightLeg.rotation.x = moveable.legClicks * Math.PI / 360;
+        } else {
+          moveable.leftLeg.rotation.x = moveable.legClicks * Math.PI / 360;
+          moveable.rightLeg.rotation.x = moveable.legClicks * -Math.PI / 360;
+        }
+        moveable.legClicks = moveable.legClicks + 10 % 20;
+      }
+    }
+
+    return nothingUpdated;
   };
 }
 
@@ -404,11 +428,15 @@ function addUnit(unit, x, z) {
 
   var leftLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
   leftLeg.position.set(-.05, .085, 0);
+  unit.leftLeg = leftLeg;
   unit.add(leftLeg);
 
   var rightLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
   rightLeg.position.set(.05, .085, 0);
+  unit.rightLeg = rightLeg;
   unit.add(rightLeg);
+
+  unit.legClicks = 0;
 
   unit.aspire_type = "unit";
   unit.uuid = uuid;
