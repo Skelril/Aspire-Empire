@@ -392,6 +392,10 @@ io.on('connection', function(socket) {
       var attacker = game.units[data.attacker];
       var defender = game.units[data.defender];
 
+      if (attacker === undefined || defender === undefined) {
+        return;
+      }
+
       if (attacker.owner === defender.owner) {
         return;
       }
