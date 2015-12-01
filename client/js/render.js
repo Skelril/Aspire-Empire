@@ -205,6 +205,7 @@ function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
   geometry.vertices[3] = new THREE.Vector3(dx, hd, dz);
 
   var material;
+  var tile;
   if (type === "default") {
     var texture = loader.load("textures/halfdrygrass.jpg");
 
@@ -214,6 +215,7 @@ function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
       shininess: 30,
       map: texture
     });
+    tile = new THREE.Mesh(geometry, material);
   } else if (type === "spawner") {
     var texture = loader.load("textures/greystone003x500.png");
     material = new THREE.MeshPhongMaterial({
@@ -222,8 +224,38 @@ function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
       shininess: 30,
       map: texture
     });
+    tile = new THREE.Mesh(geometry, material);
+
+    var tileEntGeometry = new THREE.RingGeometry(.33, .35, 32);
+    var tileEntMaterial = new THREE.MeshBasicMaterial({
+      color: 0x0000ff,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.5
+    });
+
+    var tileEntA = new THREE.Mesh(tileEntGeometry, tileEntMaterial);
+    tileEntA.aspire_type = "tile_ent";
+    tileEntA.baseLevel = ha + .1;
+    tileEntA.goUp = true;
+    tileEntA.rotateX(90 * Math.PI / 180);
+    tileEntA.position.x = (ax + dx) / 2;
+    tileEntA.position.y = tileEntA.baseLevel;
+    tileEntA.position.z = (az + dz) / 2;
+    scene.add(tileEntA);
+
+    var tileEntB = new THREE.Mesh(tileEntGeometry, tileEntMaterial);
+    tileEntB.aspire_type = "tile_ent";
+    tileEntB.baseLevel = ha + .1;
+    tileEntB.goUp = false;
+    tileEntB.rotateX(90 * Math.PI / 180);
+    tileEntB.position.x = (ax + dx) / 2;
+    tileEntB.position.y = tileEntB.baseLevel + .5;
+    tileEntB.position.z = (az + dz) / 2;
+    scene.add(tileEntB);
   }
-  return new THREE.Mesh(geometry, material);
+
+  return tile;
 }
 
 function loadMap(tileMap) {
@@ -764,7 +796,10 @@ function _updateFocusRings() {
   var unitOfChange = 1.0 / focusRings.length;
   for (var ring in focusRings) {
     var focusRing = focusRings[ring];
-    focusRing.position.set(activeUnit.position.x, activeUnit.position.y + ((activeUnit.height - activeUnit.offSet) / 2), activeUnit.position.z);
+    focusRing.position.x = activeUnit.position.x;
+    focusRing.position.y = activeUnit.position.y + ((activeUnit.height - activeUnit.offSet) / 2);
+    focusRing.position.z = activeUnit.position.z;
+
     if ((Number(ring) + 1) % 2 === 0) {
       focusRing.rotateX(.1);
     } else {
@@ -817,6 +852,20 @@ function fadeHitSplats() {
   }
 }
 
+function processTileEnt(sceneEntry) {
+  if (sceneEntry.goUp) {
+    sceneEntry.position.y += .02;
+    if (sceneEntry.position.y > sceneEntry.baseLevel + .5) {
+      sceneEntry.goUp = false;
+    }
+  } else {
+    sceneEntry.position.y -= .02;
+    if (sceneEntry.position.y < sceneEntry.baseLevel) {
+      sceneEntry.goUp = true;
+    }
+  }
+}
+
 function render() {
   setTimeout(function() {
     requestAnimationFrame(render);
@@ -836,6 +885,12 @@ function render() {
         // Camera Support
         if (sceneEntry.hasOwnProperty("targPos")) {
           processMovement(sceneEntry);
+        }
+
+        if (sceneEntry.hasOwnProperty("aspire_type")) {
+          if (sceneEntry.aspire_type === "tile_ent") {
+            processTileEnt(sceneEntry);
+          }
         }
       }
     );
