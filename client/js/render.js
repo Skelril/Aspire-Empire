@@ -413,6 +413,7 @@ function _constructRotateToFace(x, z) {
   };
 }
 
+var combatSound = new Audio('../audio/gunshot.wav');
 function _constructAttackAnimation() {
   return function(unit) {
     var updated = false;
@@ -420,9 +421,12 @@ function _constructAttackAnimation() {
       updated = true;
       unit.leftArm.rotation.x -= 10 * Math.PI / 180;
       unit.rightArm.rotation.x += 10 * Math.PI / 180;
+      combatSound.play();
     } else {
       unit.leftArm.rotation.x = 0;
       unit.rightArm.rotation.x = 0;
+      combatSound.currentTime = 0;
+      combatSound.pause();
     }
     return !updated;
   };
