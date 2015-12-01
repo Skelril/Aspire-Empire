@@ -50,7 +50,7 @@ function requestActiveUnitUpdate() {
 }
 
 socket.on('hitsplat', function(data) {
-  hitSplat(data.unit, data.damage);
+  hitSplat(data.unit.id, data.damage);
 });
 
 socket.on('attack unit', function(data) {
@@ -74,7 +74,7 @@ socket.on('spawn unit', function(data) {
 });
 
 socket.on('kill unit', function(data) {
-  remUnit(data.unit);
+  remUnit(data.unit.id);
 });
 
 socket.on('spawner activate', function(data) {
@@ -103,7 +103,7 @@ socket.on('game end', function(data) {
 });
 
 socket.on('move unit', function(data) {
-  moveUnit(data.unit, data.newX, data.newZ);
+  moveUnit(data.unit.id, data.newX, data.newZ);
 });
 
 socket.on('active unit update', function(data) {
@@ -452,9 +452,9 @@ function _handleModelChildren(unit) {
   }
 }
 
-function addUnit(unit, x, z) {
-  var uuid = unit.id;
-  var type = unit.type;
+function addUnit(serverUnit, x, z) {
+  var uuid = serverUnit.id;
+  var type = serverUnit.type;
 
   var texture = loader.load("textures/brushed_metal.jpg");
 
@@ -666,6 +666,9 @@ function remUnit(uuid) {
   var unit = units[uuid];
   scene.remove(unit);
   clickable = clickable.filter(function(el) {
+    if (el.parent !== null) {
+      return el.parent.uuid !== uuid;
+    }
     return el.uuid !== uuid;
   });
   delete units[uuid];

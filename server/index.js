@@ -421,14 +421,15 @@ io.on('connection', function(socket) {
         defender: defender
       });
       io.to(game.id).emit('hitsplat', {
-        unit: defender.id,
+        unit: defender,
         damage: damageAmt
       });
 
       if (defender.health === 0) {
         io.to(game.id).emit('kill unit', {
-          unit: defender.id
+          unit: defender
         });
+        game.map.runtime[defender.x][defender.z].unit = null;
         delete game.units[data.defender];
         return;
       }
@@ -441,14 +442,15 @@ io.on('connection', function(socket) {
         defender: attacker
       });
       io.to(game.id).emit('hitsplat', {
-        unit: attacker.id,
+        unit: attacker,
         damage: damageAmt
       });
 
       if (attacker.health === 0) {
         io.to(game.id).emit('kill unit', {
-          unit: attacker.id
+          unit: attacker
         });
+        game.map.runtime[attacker.x][attacker.z].unit = null;
         delete game.units[data.attacker];
       }
     });
@@ -476,7 +478,7 @@ io.on('connection', function(socket) {
         --unit.remainingMovement;
 
         io.to(game.id).emit('move unit', {
-          unit: data.unit,
+          unit: unit,
           newX: data.newX,
           newZ: data.newZ
         });
@@ -523,12 +525,13 @@ io.on('connection', function(socket) {
 
     if (game != undefined && player != undefined) {
       for (var unitIndex in game.units) {
-        var unit = game.units[unitIndex];
-        var condition = unit.owner === player;
+        var servUnit = game.units[unitIndex];
+        var condition = servUnit.owner === player;
         if (condition) {
           io.to(game.id).emit('kill unit', {
-            unit: unit.id
+            unit: servUnit
           });
+          game.map.runtime[servUnit.x][servUnit.z].unit = null;
           delete game.units[unitIndex];
         }
       }
