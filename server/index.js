@@ -100,6 +100,18 @@ function createGame(game) {
       winner: null,
       map: {
         runtime: {},
+        slots: [
+          {
+            x: 0,
+            z: 0,
+            player: null
+          },
+          {
+            x: 11,
+            z: 4,
+            player: null
+          }
+        ],
         template: requestMap()
       },
       players: [],
@@ -108,32 +120,32 @@ function createGame(game) {
     }
 
     // Define some units
-    newGame.unitDefinitions["Death Stalker"] = {
-      name: "Death Stalker",
+    newGame.unitDefinitions["Red Robot"] = {
+      name: "Red Robot",
+      cost: 12,
+      health: 20,
+      hitPower: 4,
+      blockingPower: 0,
+      attacks: 3,
+      movement: 2
+    };
+    newGame.unitDefinitions["Blue Robot"] = {
+      name: "Blue Robot",
       cost: 10,
-      health: 200,
-      hitPower: 5,
-      blockingPower: 5,
-      attacks: 7,
-      movement: 1
+      health: 20,
+      hitPower: 3,
+      blockingPower: 2,
+      attacks: 2,
+      movement: 2
     };
-    newGame.unitDefinitions["Magician"] = {
-      name: "Magician",
-      cost: 20,
-      health: 45,
-      hitPower: 33,
-      blockingPower: 7,
-      attacks: 1,
-      movement: 10
-    };
-    newGame.unitDefinitions["Green Cube"] = {
-      name: "Green Cube",
-      cost: 7,
-      health: 65,
-      hitPower: 1,
-      blockingPower: 15,
-      attacks: 100,
-      movement: 1000
+    newGame.unitDefinitions["Green Robot"] = {
+      name: "Green Robot",
+      cost: 15,
+      health: 40,
+      hitPower: 3,
+      blockingPower: 1,
+      attacks: 3,
+      movement: 4
     };
 
     loadRuntimeMap(newGame);
@@ -146,7 +158,18 @@ function createGame(game) {
 }
 
 function addPlayer(game, player) {
-  game.players.push(player);
+  var pSlot = null;
+  for (let slot of game.map.slots) {
+    if (slot.player === null) {
+      slot.player = player;
+      pSlot = slot;
+      break;
+    }
+  }
+  if (pSlot !== null) {
+    game.players.push(player);
+  }
+  return pSlot;
 }
 
 function createPlayer(playerName) {
@@ -273,8 +296,12 @@ io.on('connection', function(socket) {
     player = createPlayer(data.player);
     game = createGame(data.game);
 
+    var slot = addPlayer(game, player);
+    if (slot === null) {
+      return;
+    }
+
     socket.join(game.id);
-    addPlayer(game, player);
     console.log(player.id + ' has joined game ' + game.id + '.');
 
     // Initial game setup
@@ -304,7 +331,7 @@ io.on('connection', function(socket) {
       });
     }
 
-    var initialUnit = addUnit(game, 0, 1, "Green Cube", player, true);
+    var initialUnit = addUnit(game, slot.x, slot.z, "Green Robot", player, true);
 
     io.to(game.id).emit('spawn unit', {
       unit: initialUnit,

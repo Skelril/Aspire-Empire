@@ -177,7 +177,7 @@ function addTile(tileDef) {
 
   tile.x = tileDef.x;
   tile.z = tileDef.z;
-  tile.height = (tileDef.seH + tileDef.swH + tileDef.neH + tileDef.nwH) / 4;
+  tile.height = (tileDef.seH + tileDef.swH + tileDef.neH + tileDef.nwH) / 4.0;
   tile.def = tileDef;
   tile.tile_type = tileType;
   tile.aspire_type = "tile";
@@ -275,27 +275,45 @@ function _constructMoveTo(x, y, z) {
     var updatedY = false;
     var updatedZ = false;
 
-    if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== x.toFixed(MOVEMENT_PRECISION)) {
+    if (moveable.position.x !== x) {
       if (moveable.position.x < x) {
         moveable.position.x += MOVEMENT_UNIT;
+        if (moveable.position.x > x) {
+          moveable.position.x = x;
+        }
       } else {
         moveable.position.x -= MOVEMENT_UNIT;
+        if (moveable.position.x < x) {
+          moveable.position.x = x;
+        }
       }
       updatedX = true;
     }
-    if (moveable.position.y.toFixed(MOVEMENT_PRECISION) !== y.toFixed(MOVEMENT_PRECISION)) {
+    if (moveable.position.y !== y) {
       if (moveable.position.y < y) {
         moveable.position.y += MOVEMENT_UNIT;
+        if (moveable.position.y > y) {
+          moveable.position.y = y;
+        }
       } else {
         moveable.position.y -= MOVEMENT_UNIT;
+        if (moveable.position.y < y) {
+          moveable.position.y = y;
+        }
       }
       updatedY = true;
     }
-    if (moveable.position.z.toFixed(MOVEMENT_PRECISION) !== z.toFixed(MOVEMENT_PRECISION)) {
+    if (moveable.position.z !== z) {
       if (moveable.position.z < z) {
         moveable.position.z += MOVEMENT_UNIT;
+        if (moveable.position.z > z) {
+          moveable.position.z = z;
+        }
       } else {
         moveable.position.z -= MOVEMENT_UNIT;
+        if (moveable.position.z < z) {
+          moveable.position.z = z;
+        }
       }
       updatedZ = true;
     }
@@ -409,12 +427,12 @@ function addUnit(unit, x, z) {
   var legMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30});
   var armMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30});
 
-  if (type === "Death Stalker") {
+  if (type === "Red Robot") {
     var bodyMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
     var headMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
     var legMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
     var armMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
-  } else if (type === "Magician") {
+  } else if (type === "Blue Robot") {
     var bodyMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
     var headMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
     var legMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
@@ -424,30 +442,30 @@ function addUnit(unit, x, z) {
   var unit = new THREE.Object3D();
 
   var body = new THREE.Mesh(new THREE.BoxGeometry(.2, .2, .1), bodyMat);
-  body.position.set(0, .27, 0);
+  body.position.set(0, .185, 0);
   unit.add(body);
 
   var head = new THREE.Mesh(new THREE.BoxGeometry(.1, .1, .1), headMat);
-  head.position.set(0, .41, 0);
+  head.position.set(0, .325, 0);
   unit.add(head);
 
   var leftArm = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), armMat);
-  leftArm.position.set(.15, .28, 0);
+  leftArm.position.set(.15, .195, 0);
   unit.leftArm = leftArm;
   unit.add(leftArm);
 
   var rightArm = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), armMat);
-  rightArm.position.set(-.15, .28, 0);
+  rightArm.position.set(-.15, .195, 0);
   unit.rightArm = rightArm;
   unit.add(rightArm);
 
   var leftLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
-  leftLeg.position.set(-.05, .085, 0);
+  leftLeg.position.set(-.05, 0, 0);
   unit.leftLeg = leftLeg;
   unit.add(leftLeg);
 
   var rightLeg = new THREE.Mesh(new THREE.BoxGeometry(.1, .17, .1), legMat);
-  rightLeg.position.set(.05, .085, 0);
+  rightLeg.position.set(.05, 0, 0);
   unit.rightLeg = rightLeg;
   unit.add(rightLeg);
 
@@ -455,7 +473,7 @@ function addUnit(unit, x, z) {
 
   unit.aspire_type = "unit";
   unit.uuid = uuid;
-  unit.offSet = 0;
+  unit.offSet = .085;
   unit.height = .51;
   _initUnitAt(unit, x, z);
 
