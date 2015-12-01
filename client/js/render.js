@@ -767,7 +767,8 @@ function displayWinner(winner) {
 }
 
 // Lighting
-var light = new THREE.AmbientLight(0x404040); // soft white light
+
+var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
 scene.add( light );
 
 function processMovement(moveable) {
