@@ -404,21 +404,21 @@ function addUnit(unit, x, z) {
 
   var texture = loader.load("textures/brushed_metal.jpg");
 
-  var bodyMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-  var headMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-  var legMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-  var armMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+  var bodyMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30});
+  var headMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30});
+  var legMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30});
+  var armMat = new THREE.MeshPhongMaterial({ color: 0x00FF00, map: texture, specular: 0x555555, shininess: 30});
 
   if (type === "Death Stalker") {
-    var bodyMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-    var headMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-    var legMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-    var armMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var bodyMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
+    var headMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
+    var legMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
+    var armMat = new THREE.MeshPhongMaterial({ color: 0xFF0000, map: texture, specular: 0x555555, shininess: 30});
   } else if (type === "Magician") {
-    var bodyMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-    var headMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-    var legMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
-    var armMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30, side: THREE.DoubleSide});
+    var bodyMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
+    var headMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
+    var legMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
+    var armMat = new THREE.MeshPhongMaterial({ color: 0x0000FF, map: texture, specular: 0x555555, shininess: 30});
   }
 
   var unit = new THREE.Object3D();
