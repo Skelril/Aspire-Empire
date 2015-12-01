@@ -200,8 +200,8 @@ function addTile(tileDef) {
 function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
   var geometry = new THREE.PlaneGeometry(5, 5, 1, 1);
   geometry.vertices[0] = new THREE.Vector3(ax, ha, az);
-  geometry.vertices[1] = new THREE.Vector3(bx, hb, bz);
-  geometry.vertices[2] = new THREE.Vector3(cx, hc, cz);
+  geometry.vertices[2] = new THREE.Vector3(bx, hb, bz);
+  geometry.vertices[1] = new THREE.Vector3(cx, hc, cz);
   geometry.vertices[3] = new THREE.Vector3(dx, hd, dz);
 
   var material;
@@ -212,8 +212,7 @@ function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
       color: 0x00FF00,
       specular: 0x555555,
       shininess: 30,
-      map: texture,
-      side: THREE.DoubleSide
+      map: texture
     });
   } else if (type === "spawner") {
     var texture = loader.load("textures/greystone003x500.png");
@@ -221,8 +220,7 @@ function _addTile(type, ax, az, bx, bz, cx, cz, dx, dz, ha, hb, hc, hd) {
       color: 0x8C8C8C,
       specular: 0x555555,
       shininess: 30,
-      map: texture,
-      side: THREE.DoubleSide
+      map: texture
     });
   }
   return new THREE.Mesh(geometry, material);
@@ -717,10 +715,6 @@ function displayWinner(winner) {
 // Lighting
 var light = new THREE.AmbientLight(0x404040); // soft white light
 scene.add( light );
-
-var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-directionalLight.position.set(0, 1, 0);
-scene.add( directionalLight );
 
 function processMovement(moveable) {
   if (moveable.position.x.toFixed(MOVEMENT_PRECISION) !== moveable.targPos.x.toFixed(MOVEMENT_PRECISION)) {
